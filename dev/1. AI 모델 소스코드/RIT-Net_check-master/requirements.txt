@@ -1,0 +1,13 @@
+torchsummary
+tqdm
+scikit-learn
+matplotlib
+numpy
+torch 
+Pillow   
+opencv-python-headless
+argparse  
+pprint 
+torchvision
+os
+
