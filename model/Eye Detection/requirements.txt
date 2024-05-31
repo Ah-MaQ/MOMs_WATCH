@@ -7,7 +7,5 @@ torch
 Pillow   
 opencv-python-headless
 argparse  
-pprint 
+prettyprinter
 torchvision
-os
-
