@@ -30,7 +30,7 @@ if __name__ == '__main__':
         print ("valid models are:",list(model_dict.keys()))
         exit(1)
 
-    device=torch.device("cuda")
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     model = model_dict[args.model]
     model = model.to(device)
@@ -42,6 +42,8 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(filename))
     model = model.to(device)
     model.eval()
+    from torchsummary import summary
+    summary(model, input_size=(1, 224, 224))
 
     test_set = IrisDataset(filepath = '/media/di2/T7/RIT_net/test25k/',\
     #/home/hoseung/Work/NIA/data/rit_data/test25k/',\
