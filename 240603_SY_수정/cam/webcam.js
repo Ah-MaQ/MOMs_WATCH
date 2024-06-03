@@ -32,11 +32,9 @@ document.addEventListener("DOMContentLoaded", function() {
                         });
                     }, 'image/jpeg');
                 }
-
-                requestAnimationFrame(sendFrame);
             }
 
-            sendFrame();
+            setInterval(sendFrame, 1000 / 30);  // 30 fps로 전송
         } catch (error) {
             console.error('Error accessing the webcam:', error);
         }

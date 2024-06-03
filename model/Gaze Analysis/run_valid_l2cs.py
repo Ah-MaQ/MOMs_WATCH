@@ -35,7 +35,7 @@ def parse_args():
         default= "nia2022", type=str)
     parser.add_argument(
         '--snapshot', dest='snapshot', help='Path to the folder contains models.', 
-        default='models/', type=str)
+        default='./', type=str)
     parser.add_argument(
         '--evalpath', dest='evalpath', help='path for the output evaluating gaze test.',
         default="evaluation/L2CS-nia2022", type=str)
