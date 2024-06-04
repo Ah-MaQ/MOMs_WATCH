@@ -55,7 +55,6 @@ body {
   height: 15px; /* 버튼 이미지의 높이를 설정하세요 */
 }
 
-
 .container2 {
   display: flex;
   justify-content: flex-start; /* 요소들을 왼쪽으로 정렬 */
@@ -127,15 +126,26 @@ background: #FF7907;
 transform: translateX(120%);
 }
 
-.stopwatch {
-  margin-top: 20px;
-}
-
-button {
-  margin: 10px;
-}
 
 #time {
   font-size: 48px;
-  margin-top: 20px;
+  margin: 20px auto 0 auto;
+  display: block;
+}
+
+.timerInput {
+  margin: 0 auto 0 auto;
+}
+
+#minutesInput {
+  width: 50px;
+}
+
+#startButton {
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 50%;
+  height: 30px;
+  margin: 10px 25% 0 25% ;
 }

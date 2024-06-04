@@ -31,9 +31,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // 비동기 응답을 위해 true를 반환
   }
 
-  if (message.command === "timerEnded") {
-    alert("공부가 종료되었습니다!");
-  }
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {

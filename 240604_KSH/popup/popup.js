@@ -72,3 +72,13 @@ function startUpdatingTime() {
 
 // 팝업이 열릴 때 남은 시간을 즉시 업데이트
 startUpdatingTime();
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message,command === "timerEnded") {
+    chrome.notifications.create('studyEndNotification', {
+      type: 'basic',
+      title: '공부 종료',
+      message: '공부가 종료되었습니다!'
+    }, function(notificationId) {});
+  }
+});
