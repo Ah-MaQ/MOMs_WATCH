@@ -22,7 +22,8 @@ class get_images(Dataset):
     def __getitem__(self, idx):
         img = Image.open(os.path.join(self.dir_path, self.lines[idx])).convert("L")
         img = img.resize((400, 640))
-        W, H = img.width, img.height
+        img.show()
+        # W, H = img.width, img.height
         table = 255.0 * (np.linspace(0, 1, 256) ** 0.8)
         img = cv2.LUT(np.array(img), table)
         img = self.clahe.apply(np.array(np.uint8(img)))
@@ -33,9 +34,13 @@ class get_images(Dataset):
         # print("the shape is '", img.shape, "'")
         return img
 
+#c == 1 : Sclera
+#c == 2 : Iris
+#c == 3 : Pupil
 def get_predictions(output):
     bs, c, h, w = output.size()
     values, indices = output.cpu().max(1)
+    # values = transforms.ToPILImage()(values)
     indices = indices.view(bs, h, w) # bs x h x w
     return indices
 
@@ -63,6 +68,7 @@ model = DenseNet2D(dropout=True,prob=0.2)
 model = model.to(device)
 saved_state_dict = torch.load('./models/trained_rit.pkl')
 model.load_state_dict(saved_state_dict)
+# print(model)
 model = model.to(device)
 
 # set for model
@@ -72,17 +78,13 @@ model.eval()
 count = 0
 with (torch.no_grad()):
     for img in img_loader:
+        timg = transforms.ToPILImage()(img[0])
+        timg.show()
         img = img.to(device)
         output = model(img)
-        print(output.size())
-        # print(output[0])
-        # print(output[1])
-        # print(output[2])
-        # print(output[3])
-        # predict = get_predictions(output)
-        # # print(labels.shape)
-        # iou = mIoU(predict, labels) * 3.7
-        # ious.append(iou)
+        predict = get_predictions(output)
+        timg = transforms.ToPILImage()(predict.to(torch.float32))
+        timg.show()
         count += 1
         if count == 1:
             break
