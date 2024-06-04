@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+  <title>MOM's WATCH</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+  <style>
+    .no-transition {
+      transition: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="../images/icon48.png" alt="mom's watch" class="inline-image">
+    <span class="inline-text">MOM's WATCH</span>
+    <div class="button-container">
+        <button id="setting_button" class="png-button">
+            <img src="../images/setting_button.png" alt="setting" class="button-image">
+        </button>
+        <button id="account_button" class="png-button">
+            <img src="../images/account_button.png" alt="account" class="button-image">
+        </button>
+    </div>
+  </div>
+
+  <div class="container2">
+    <span class="cyft">Check your focus time!</span>
+    <label class="switch switch1">
+    <input type="checkbox" id="toggle1">
+    <span class="slider slider1"></span>
+    </label>
+  </div>
+
+  <!-- <div class="stopwatch">
+    <input type="number" id="minutes" placeholder="분" min="0" max="59">
+    <span id="time">00:00</span>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+    <button id="reset">Reset</button>
+  </div> -->
+
+  <div>
+    <label for="minutesInput"> 분 입력: </label>
+    <input type="number" id="minutesInput" min="0">
+    <button id="startButton">공부시작</button>
+  </div>
+  <div id="time">00:00</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
