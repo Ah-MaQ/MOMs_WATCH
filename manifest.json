@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Drowsiness Detector",
+  "version": "1.0",
+  "description": "Detects if the user is drowsy and alerts them.",
+  "permissions": ["activeTab",
+  "storage",
+  "tabs",
+  "camera",
+  "background",
+  "audio"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}
