@@ -2,46 +2,15 @@ python.exe -m pip install --upgrade pip
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install einops opencv-python matplotlib
 
-자세 예측 dfer
-시선 예측 l2cs
+rit-net
+Back: Background (non-eye part of peri-ocular region)
+Sclera: Sclera
+Iris: Iris
+Pupil: Pupil
 
-================================
-
-torchsummary
-torch==1.8.1
-torchvision==0.9.1
-torchaudio==0.8.1
-cudatoolkit=10.2
-tqdm
-scikit-learn
-matplotlib
-numpy
-Pillow
-opencv-python-headless
-argparse
-pprint
-os
-mediapipe
-
-matplotlib>=3.3.4
-numpy>=1.19.5
-opencv-python>=4.5.5
-pandas>=1.1.5
-Pillow>=8.4.0
-scipy>=1.5.4
-torch>=1.10.1
-torchvision>=0.11.2
-
-torchsummary
-tqdm
-scikit-learn
-matplotlib
-numpy
-torch
-Pillow
-opencv-python-headless
-argparse
-pprint
-torchvision
-os
-
+dfer
+state_keys={"F":0,    # 집중
+            "S":1,    # 졸림
+            "D":2,    # 집중 결핍
+            "A":3,    # 집중 하락
+            "N":4}    # 태만
