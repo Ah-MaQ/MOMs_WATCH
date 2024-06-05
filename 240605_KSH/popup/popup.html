@@ -37,29 +37,18 @@
       </label>
     </div>
 
-    <!-- <div class="stopwatch">
-      <input type="number" id="minutes" placeholder="분" min="0" max="59">
-      <span id="time">00:00</span>
-      <button id="start">Start</button>
-      <button id="stop">Stop</button>
-      <button id="reset">Reset</button>
-    </div> -->
 
   <footer>
-    <ul class="navigation">
-      <li class="navigation-item navigation-item-active">
-        <button data-page="timerSection" class="navigation-button">
-          <span class="navigation-icon icon-timer"></span>
-          <span data-i18n="aside_timer">Timer</span>
-        </button>
-      </li>
-      <li class="navigation-item">
-        <button data-page="stopwatchSection" class="navigation-button">
-          <span class="navigation-icon icon-stopwatch"></span>
-          <span data-i18n="aside_stopwatch">Stopwatch</span>
-        </button>
-      </li>
-    </ul>
+    <div class="navigation-container">
+      <button data-page="timerSection" class="navigation-button left active">
+        <span class="navigation-icon icon-timer"></span>
+        <span data-i18n="aside_timer">Timer</span>
+      </button>
+      <button data-page="stopwatchSection" class="navigation-button right">
+        <span class="navigation-icon icon-stopwatch"></span>
+        <span data-i18n="aside_stopwatch">Stopwatch</span>
+      </button>
+    </div>
   </footer>
 
   <div id="timerSection" class="section">
@@ -74,7 +63,13 @@
   </div>
 
   <div id="stopwatchSection" class="section" style="display: none;">
-    스톱워치 섹션 내용
+    <div class="stopwatch">
+      <input type="number" id="minutes" placeholder="분" min="0" max="59">
+      <span id="time">00:00</span>
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+      <button id="reset">Reset</button>
+    </div>
   </div>
 
 

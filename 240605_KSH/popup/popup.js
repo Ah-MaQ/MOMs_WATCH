@@ -108,3 +108,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // 초기 화면 설정 (예: 알람 섹션을 보여줌)
   showSection('timerSection');
 });
+
+document.querySelectorAll('.navigation-button').forEach(button => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.navigation-button').forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+  });
+});

@@ -133,6 +133,7 @@ transform: translateX(120%);
   align-items: center; /* 가로 방향 중앙 정렬 */
   justify-content: center; /* 세로 방향 중앙 정렬 */
   height: 100vh; /* 전체 화면 높이 사용 */
+  margin-top: 10px;
 }
 
 #time {
@@ -159,29 +160,31 @@ transform: translateX(120%);
 }
 
 /*navigation */
-.navigation {
-  list-style-type: none;
+.navigation-container {
   display: flex;
-  justify-content: space-around; /* 가로로 정렬 */
-  padding: 0;
-  margin: 0;
-}
-
-.navigation-item {
-  margin: 0;
-  padding: 0;
+  height: 60%;
+  margin: auto 5% auto 5%;
+  border: 2px solid #ffffff; /* 네모 박스의 테두리 */
+  border-radius: 8px; /* 둥근 모서리 */
+  overflow: hidden; /* 내부 요소가 테두리를 넘지 않도록 설정 */
 }
 
 .navigation-button {
-  background: none;
-  border: 2px solid transparent;
+  flex: 1;
+  background: #b16221;
+  color: #ffffff;
+  border: none;
   cursor: pointer;
-  padding: 10px;
+  padding: 20px;
   font-size: 16px;
   display: flex;
   align-items: center;
-  border-radius: 8px;
-  transition: border-color 0.3s, background-color 0.3s;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.navigation-button.left {
+  border-right: 1px solid #ffffff; /* 왼쪽 버튼의 오른쪽 테두리 */
 }
 
 .navigation-button:focus {
@@ -192,15 +195,16 @@ transform: translateX(120%);
   margin-right: 5px;
 }
 
-.navigation-item-active .navigation-button {
-  font-weight: bold;
-  border-color: #007BFF; /* 활성화된 상태의 테두리 색 */
-  background-color: #E7F3FF; /* 활성화된 상태의 배경 색 */
+.navigation-button:hover {
+  background-color: #FE8D33; /* 호버 시 배경색 */
 }
 
-.navigation-button:hover {
-  border-color: #007BFF; /* 마우스 오버 시 테두리 색 */
+.navigation-button.active {
+  font-weight: bold;
+  background-color: #FE8D33;
+  color: white;
 }
+
 /* section */
 .section {
   opacity: 0;
