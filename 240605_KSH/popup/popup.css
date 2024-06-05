@@ -1,0 +1,215 @@
+/* popup.css */
+body {
+  font-family: Arial, 'Poppins', sans-serif;
+  padding: 30px;
+  background-color: #ffffff;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 260px; /* 팝업 너비 */
+  height: 420px; /* 팝업 높이 */
+}
+
+.container {
+  display: flex;
+  align-items: center; /* 이미지와 텍스트를 세로 중앙 정렬 */
+  justify-content: flex-start; /* 요소들을 왼쪽으로 정렬 */
+  position: relative; /* 자식 요소의 절대 위치를 기준으로 삼기 위해 설정 */
+}
+
+.inline-image {
+  margin-right: 10px; /* 이미지와 텍스트 사이의 간격 조절 */
+  width: 28px;
+  height: 28px;
+}
+
+.inline-text {
+  font-style: normal;
+  font-weight: 900;
+  font-size: 19px;
+  line-height: 19px;
+  background: linear-gradient(180deg, #FE8D33 0%, #F84401 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  align-self: flex-end; /* 텍스트를 아래로 정렬 */
+  margin-right: 20px; /* 텍스트와 버튼 컨테이너 사이의 간격 */
+}
+
+.button-container {
+  display: flex;
+  gap: 10px; /* 버튼들 사이의 간격을 설정 */
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+.png-button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.button-image {
+  width: 15px; /* 버튼 이미지의 너비를 설정하세요 */
+  height: 15px; /* 버튼 이미지의 높이를 설정하세요 */
+}
+
+.container2 {
+  display: flex;
+  justify-content: flex-start; /* 요소들을 왼쪽으로 정렬 */
+
+  position: relative; /* 자식 요소의 절대 위치를 기준으로 삼기 위해 설정 */
+  padding: 10px;
+}
+
+.cyft {
+  font-style: normal;
+  font-weight: 470;
+  font-size: 15px;
+  color: #000000;
+  align-self: flex-end; /* 텍스트를 아래로 정렬 */
+}
+
+
+/* 토글 컨테이너 */
+.switch {
+position: relative;
+display: inline-block;
+width: 35.3px;
+height: 19.6px;
+margin: 0px;
+margin-top: 20px;
+margin-left: auto;
+}
+
+.switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+/* 토글 슬라이더 */
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #EFEFEF;
+transition: .4s;
+border-radius: 50px;
+box-shadow: inset 0px 6px 8px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 이벤트 핸들러 */
+.slider:before {
+position: absolute;
+content: "";
+height: 70.3%;
+width: 38%;
+left: 8%;
+bottom: 14.8%;
+background: linear-gradient(180deg, #FFFFFF 0%, #E8EAEA 100%);
+transition: .4s;
+border-radius: 50%;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* 토글 슬라이더 온 상태 */
+.switch input:checked + .slider {
+background: #FF7907;
+}
+
+.switch input:checked + .slider:before {
+transform: translateX(120%);
+}
+
+/* timerSection */
+#timerSection {
+  display: flex;
+  flex-direction: column; /* 세로 방향으로 정렬 */
+  align-items: center; /* 가로 방향 중앙 정렬 */
+  justify-content: center; /* 세로 방향 중앙 정렬 */
+  height: 100vh; /* 전체 화면 높이 사용 */
+}
+
+#time {
+  font-size: 48px;
+  margin: 20px 25% 0 25%;
+  display: block;
+}
+
+.timerInput {
+  margin: 0 25% 0 25%;
+}
+
+#minutesInput {
+  width: 50px;
+}
+
+#startButton {
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 50%;
+  height: 30px;
+  margin: 10px 25% 0 25% ;
+}
+
+/*navigation */
+.navigation {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-around; /* 가로로 정렬 */
+  padding: 0;
+  margin: 0;
+}
+
+.navigation-item {
+  margin: 0;
+  padding: 0;
+}
+
+.navigation-button {
+  background: none;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.navigation-button:focus {
+  outline: none;
+}
+
+.navigation-icon {
+  margin-right: 5px;
+}
+
+.navigation-item-active .navigation-button {
+  font-weight: bold;
+  border-color: #007BFF; /* 활성화된 상태의 테두리 색 */
+  background-color: #E7F3FF; /* 활성화된 상태의 배경 색 */
+}
+
+.navigation-button:hover {
+  border-color: #007BFF; /* 마우스 오버 시 테두리 색 */
+}
+/* section */
+.section {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  position: absolute;
+  width: 100%;
+}
+
+.section-active {
+  opacity: 1;
+  position: relative;
+}
