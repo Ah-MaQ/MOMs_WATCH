@@ -1,0 +1,13 @@
+{
+    "name": "chrome-extension",
+    "version": "1.0.0",
+    "description": "Chrome extension with login and registration",
+    "main": "background.js",
+    "scripts": {
+      "start": "node background.js"
+    },
+    "type": "module",
+    "dependencies": {
+      "firebase": "^9.0.0"
+    }
+  }
