@@ -45,7 +45,7 @@ def boundingbox_show(filename):
   yolo_labels = data.split('\n')[:-1]
 
   # 이미지를 불러옵니다.
-  image_path = 'img1.png'
+  image_path = 'img.png'
   image = cv2.imread(image_path)
   image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # OpenCV는 BGR 형식이므로 RGB로 변환
 
@@ -74,8 +74,8 @@ def boundingbox_show(filename):
 
   return image
 
-# image = annotation_show('label.json')
-image = boundingbox_show('label1.txt')
+#image = annotation_show('label.json')
+image = boundingbox_show('label.txt')
 
 # 이미지를 출력합니다.
 plt.figure(figsize=(10, 10))

@@ -69,7 +69,8 @@ class Transformer(nn.Module):
         super().__init__()
         self.layers = nn.ModuleList([])
         for _ in range(depth):
-            self.layers.append(nn.ModuleList([Residual(PreNorm(dim, Attention(dim, heads=heads, dim_head=dim_head, dropout=dropout))),
+            self.layers.append(nn.ModuleList([Residual(PreNorm(dim, Attention(dim, heads=heads,
+                                                                              dim_head=dim_head, dropout=dropout))),
                                               Residual(PreNorm(dim, FeedForward(dim, mlp_dim, dropout=dropout)))]))
 
     def forward(self, x):

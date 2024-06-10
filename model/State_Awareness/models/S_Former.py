@@ -1,5 +1,5 @@
 import torch
-from einops import rearrange, repeat
+from einops import rearrange
 from torch import nn, einsum
 import torch.nn.functional as F
 import math
