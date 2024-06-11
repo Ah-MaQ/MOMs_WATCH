@@ -1,15 +1,12 @@
-import torch
 import torch.nn as nn
-from torch.autograd import Variable
 import math
-import torch.nn.functional as F
 
 
 class L2CS(nn.Module):
     def __init__(self, block, layers, num_bins):
         self.inplanes = 64
         super(L2CS, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,bias=False)
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -22,7 +19,7 @@ class L2CS(nn.Module):
         self.fc_yaw_gaze = nn.Linear(512 * block.expansion, num_bins)
         self.fc_pitch_gaze = nn.Linear(512 * block.expansion, num_bins)
 
-       # Vestigial layer from previous experiments
+        # Vestigial layer from previous experiments
         self.fc_finetune = nn.Linear(512 * block.expansion + 3, 3)
 
         for m in self.modules():
@@ -63,11 +60,7 @@ class L2CS(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
 
-        
         # gaze
-        pre_yaw_gaze =  self.fc_yaw_gaze(x)
+        pre_yaw_gaze = self.fc_yaw_gaze(x)
         pre_pitch_gaze = self.fc_pitch_gaze(x)
         return pre_yaw_gaze, pre_pitch_gaze
-
-
-
