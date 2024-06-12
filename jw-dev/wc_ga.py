@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import time
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -16,10 +17,10 @@ mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
 
 
-def draw_gaze(a, b, c, d, image_in, pitchyaw, thickness=2, color=(255, 255, 0), scale=2.0):
+def draw_gaze(a, b, c, d, image_in, pitchyaw, thickness=2, color=(255, 255, 0)):
     image_out = image_in
     (h, w) = image_in.shape[:2]
-    length = w / 2
+    length = c
     pos = (int(a + c / 2.0), int(b + d / 2.0))
     if len(image_out.shape) == 2 or image_out.shape[2] == 1:
         image_out = cv2.cvtColor(image_out, cv2.COLOR_GRAY2BGR)
@@ -36,7 +37,7 @@ cudnn.enabled = True
 gpu = torch.device('cuda:0')
 
 # 모델 로드
-model = L2CS(torchvision.models.resnet.Bottleneck, [3, 4, 6, 3], 90)
+model = L2CS(torchvision.models.resnet.Bottleneck, [3, 4, 6, 3], 90)    # ResNet50
 saved_state_dict = torch.load('./state_dicts/l2cs_trained.pkl')
 model.load_state_dict(saved_state_dict)
 model.cuda(gpu)
@@ -65,13 +66,16 @@ cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     raise IOError("웹캠을 사용할 수 없습니다.")
 
-with torch.no_grad() and mp_face_detection.FaceDetection(min_detection_confidence=0.2) as face_detection:
+with torch.no_grad() and mp_face_detection.FaceDetection(min_detection_confidence=0.7) as face_detection:
     while True:
-        ret, frame = cap.read()
+        # # 비디오 읽기
+        success, frame = cap.read()
 
-        if not ret:
+        if not success:
             print("프레임을 읽어올 수 없습니다.")
-            break
+            time.sleep(0.1)
+
+        # # 이미지 전처리
 
         # OpenCV의 BGR 이미지를 PIL 이미지로 변환
         pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
@@ -81,7 +85,7 @@ with torch.no_grad() and mp_face_detection.FaceDetection(min_detection_confidenc
         img = img.unsqueeze(0)  # 배치 차원 추가
         img = Variable(img).cuda(gpu)
 
-        # 모델 예측
+        # # 모델 예측
         gaze_pitch, gaze_yaw = model(img)
 
         # Binned predictions
@@ -128,10 +132,12 @@ with torch.no_grad() and mp_face_detection.FaceDetection(min_detection_confidenc
 
         # 프레임을 화면에 표시
         cv2.imshow('Gaze Estimation', frame)
-
+        print(face.detections)
+        print(detection)
+        break
         # 'q' 키를 누르면 종료
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
 
 # 웹캠과 창 해제
 cap.release()

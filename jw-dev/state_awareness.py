@@ -85,6 +85,8 @@ state = ['집중', '졸림', '집중 결핍', '집중 하락', '태만']
 model.eval()
 count = 0
 with torch.no_grad():
+
+
     for images in loader:
         images = images.cuda().view(-1, 3, 112, 112)  # 배치 차원 축소 및 모델 입력 형태에 맞게 조정
         output = model(images).to('cpu')
