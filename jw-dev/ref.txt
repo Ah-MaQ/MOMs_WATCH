@@ -1,6 +1,6 @@
 python.exe -m pip install --upgrade pip
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-pip install einops opencv-python matplotlib
+pip install einops opencv-python matplotlib mediapipe
 
 rit-net
 Back: Background (non-eye part of peri-ocular region)
