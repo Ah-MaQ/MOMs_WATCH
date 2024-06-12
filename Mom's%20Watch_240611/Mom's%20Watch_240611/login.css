@@ -1,0 +1,15 @@
+head *:lang(ko) {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.login-title {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 20px;
+    background: linear-gradient(180deg, #FE8D33 0%, #F84401 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    align-self: flex-end;
+}

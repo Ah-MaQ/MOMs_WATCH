@@ -1,0 +1,502 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    width: 360px;
+    height: 540px;
+    padding: 30px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+body *:lang(ko) {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*---- title + alarm + settings ----*/
+.head-container {
+    width: 100%;
+    height: 50px;
+    padding: 0px 10px 10px 8px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+    background-color: transparent;
+    justify-content: space-between;
+    align-items: flex-end;
+    display: flex;
+    position: relative;
+}
+
+.head {
+    width: 200px;
+    height: 100%;
+    justify-content: space-between;
+    align-items: flex-end;
+    display: flex;
+    position: relative;
+}
+
+.head .logo {
+    width: 30px;
+    height: 30px;
+}
+
+.head .title {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 20px;
+    background: linear-gradient(180deg, #FE8D33 0%, #F84401 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    align-self: flex-end;
+}
+
+.head-button {
+    width: 44px;
+    height: 100%;
+    justify-content: space-between;
+    align-items: flex-end;
+    display: flex;
+    position: relative;
+}
+
+.head-button .alarm-button {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.volume-popup {
+    display: none;
+    position: absolute;
+    bottom: 25px; /* 알람 버튼 바로 위에 위치 */
+    left: 0; /* 알람 버튼 왼쪽 끝에 맞춰 위치 */
+    width: 80px;
+    background-color: transparent;
+    z-index: 1000;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.volume-popup input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #FF7907 0%, #FF7907 var(--value, 50%), #ddd var(--value, 50%), #ddd 100%);
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    border-radius: 5px;
+}
+
+.volume-popup input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 5px;
+    height: 10px;
+    border-radius: 5px;
+    background: #FF7907;
+    cursor: pointer;
+}
+
+
+.volume-popup button {
+    width: 10px;
+    height: 10px;
+    background-color: #FF7907;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-left: 0; /* 왼쪽에 위치 */
+}
+
+.volume-popup button:hover {
+    background-color: #FA560C;
+}
+
+.head-button .settings-button {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+/*---- dropbox + stopwatch + timer ----*/
+
+.timer-container {
+    width: 100%;
+    height: 230px;
+    padding: 10px 20px 10px 20px;
+    box-sizing: border-box;
+    background-color: transparent;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.dropdown {
+    width: 100%;
+    height: 25px;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    /* position: absolute; */
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s, border-color 0.3s;
+    border: 1px solid #C0C0C0;
+    border-radius: 10px;
+    z-index: 999 !important;
+}
+
+.dropdown .dropdown-text {
+    color: #FA560C;
+    font-size: 12px;
+}
+
+.drop-button {
+    width: 20px;
+    height: 21px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: stroke 0.3s;
+}
+
+.drop-button:hover path {
+    stroke: #FA560C;
+}
+
+.drop-button:hover ~ .dropdown {
+    border-color: #FA560C;
+}
+
+/* 드롭다운 메뉴 기본 상태: 숨김 */
+.dropdown-content {
+    position: absolute;
+    top: 30px;
+    z-index: 0;
+    display: none;
+    background-color: #fff;
+    box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    transform: translateY(0%);
+    width: 82%;
+}
+
+.dropdown-content button {
+    color: #000;
+    padding: 12px 16px;
+    font-size: 10px;
+    text-decoration: none;
+    display: block;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dropdown-content button:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown-content .remove-btn {
+    position: absolute;
+    right: 10px;
+    color: #ff0000;
+    cursor: pointer;
+    display: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dropdown-content button:hover .remove-btn {
+    display: inline;
+}
+
+.input-new-item {
+    width: 80%;
+    padding: 12px 16px;
+    margin: 0;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.input-new-item::placeholder {
+    color: #888;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.timer-menu {
+    width: 100%;
+    height: 25px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.timer-menu button:first-child,
+.timer-menu button:last-child {
+    flex: 1;
+}
+
+.timer-menu button:last-child {
+    margin-left: 10px;
+}
+
+.timer-menu button {
+    background-color: #4B4B4B;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+}
+
+.timer-menu button:hover {
+    background-color: #FF7907;
+}
+
+.timer-menu button:active {
+    background-color: #FF7907;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.timer-menu button.selected {
+    background-color: #FA560C;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.timer {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px 0px;
+    gap: 15px;
+    width: 260px;
+    height: 130px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #F2F2F2;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+}
+
+.time {
+    font-weight: 700;
+    font-size: 40px;
+    margin-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
+    justify-content: center;
+    align-items: flex-end;
+    display: flex;
+}
+
+.time .time-part {
+    display: inline-block;
+    width: 60px;
+    height: 40px;
+}
+
+.time .separator {
+    font-size: 20px;
+    height: 20px;
+    font-weight: 500;
+}
+
+.time .ms {
+    font-size: 20px;
+    width: 30px;
+    height: 20px;
+    font-weight: 500;
+}
+
+.edit-mode {
+    color: #d3d3d3;
+    cursor: text;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+
+.editable {
+    animation: blink 1s steps(2, start) infinite;
+    cursor: pointer;
+}
+
+@keyframes blink {
+    to {
+        visibility: hidden;
+    }
+}
+
+#message-box {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 10px 20px;
+    background-color: #ffdddd;
+    color: #d8000c;
+    border: 1px solid #d8000c;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    display: none;
+    z-index: 1000;
+}
+.controls-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 90%
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: fill 0.3s;
+    align-items: flex-end;
+}
+
+#start-btn:hover svg path,
+#start-btn:active svg path,
+#start-btn:focus svg path {
+    fill: #FA560C !important;
+}
+
+#pause-btn:hover svg path,
+#pause-btn:active svg path,
+#pause-btn:focus svg path {
+    fill: #FA560C !important;
+}
+
+#reset-btn:hover svg path,
+#reset-btn:active svg path {
+    stroke: #FA560C !important;
+}
+
+/*---- Check your focus time! + 토글 ----*/
+.cyft-container {
+    width: 100%;
+    height: 11.1%;
+    padding: 10px;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+
+.cyft {
+    font-style: normal;
+    font-weight: 300;
+    font-size: 17px;
+    color: #000000;
+    font-family: 'Poppins', sans-serif;
+}
+
+.toggleBody {
+    width: 35.3px;
+    height: 19.6px;
+    border-radius: 10px;
+    background-color: #EFEFEF;
+    box-shadow: inset 0px 3px 4px 1px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.toggleBody .toggleHandle {
+    position: absolute;
+    height: 70.3%;
+    width: 38%;
+    left: 8%;
+    bottom: 14.8%;
+    background: linear-gradient(180deg, #FFFFFF 0%, #E8EAEA 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 0.25rem 1px rgba(0 0 0 / 15%);
+}
+
+.toggleBody.on {
+    background: #FF7907;
+}
+
+.toggleBody.on .toggleHandle {
+    left: calc(100% - 38% - 8%);
+}
+
+.toggleBody.transition .toggleHandle,
+.toggleBody.transition {
+    transition: all 0.2s ease-in;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-container .login-button {
+    background-color: #FF7907;
+    color: white;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 35px;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-container .login-text {
+    width: 100%;
+    height: 50px;
+    padding: 10px 0px;
+    align-items: center;
+    justify-content: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    background: linear-gradient(90deg, #FE8D33 0%, #F84401 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-align: center;
+    font-family: 'Noto Sans KR', sans-serif;
+}
