@@ -1,0 +1,9 @@
+names:
+  0: r_iris
+  1: l_iris
+  2: r_eyelid
+  3: l_eyelid
+  4: r_center
+  5: l_center
+train: /media/jinsu/My Passport/yolov8/data/train/
+val: /media/jinsu/My Passport/yolov8/data/valid/
