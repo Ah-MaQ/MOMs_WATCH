@@ -125,28 +125,36 @@ def visualize_gaze_clusters(frame, gaze_pos, max_points=100, eps=30, min_samples
     return result_frame
 
 # draw face_bbox & gaze with arrow
-def draw_gaze(a, b, c, d, image_in, gaze_angles):
+def draw_gaze(a, b, c, d, image_in, gaze_angles, mh=900, mw=1600):
     global pitch_ema, yaw_ema
-    pitch, yaw = gaze_angles
+    yaw, pitch = gaze_angles
 
     # EMA 계산
-    # alpha = 0.2  # EMA 계수
-    # if pitch_ema is None:
-    #     pitch_ema = pitch
-    #     yaw_ema = yaw
-    # else:
-    #     pitch_ema = alpha * pitch + (1 - alpha) * pitch_ema
-    #     yaw_ema = alpha * yaw + (1 - alpha) * yaw_ema
-    #
-    # smooth_pitch = pitch_ema
-    # smooth_yaw = yaw_ema
+    alpha = 0.2  # EMA 계수
+    if pitch_ema is None:
+        pitch_ema = pitch
+        yaw_ema = yaw
+    else:
+        pitch_ema = alpha * pitch + (1 - alpha) * pitch_ema
+        yaw_ema = alpha * yaw + (1 - alpha) * yaw_ema
+
+    smooth_pitch = pitch_ema
+    smooth_yaw = yaw_ema
+
+    y1 = (mh - image_in.shape[0]) // 2
+    y2 = y1 + image_in.shape[0]
+    x1 = (mw - image_in.shape[1]) // 2
+    x2 = x1 + image_in.shape[1]
+
+    output_img = np.ones((mh, mw, 3), dtype=np.uint8)*200
+    output_img[y1:y2, x1:x2] = image_in
 
     # bbox 그리기
-    cv2.rectangle(image_in, (a, b), (a + c, b + d), (0, 255, 0), 1)
+    cv2.rectangle(output_img, (x1+a, y1+b), (x1+a+c, y1+b+d), (0, 255, 0), 1)
 
     # 시선 위치 계산
-    length = 2*image_in.shape[1]
-    pos = (int(a + c / 2.0), int(b + d / 4.0))
+    length = mw
+    pos = (int(x1 + a + c / 2.0), int(y1 + b + d / 4.0))
     dx = -length * np.sin(yaw) * np.cos(pitch)
     dy = -length * np.sin(pitch)
 
@@ -155,18 +163,18 @@ def draw_gaze(a, b, c, d, image_in, gaze_angles):
         pos_hist[1].append(pos[1] + dy)
 
     gaze_pos = [np.mean(pos_hist[0]), np.mean(pos_hist[1])]
-    gaze_pos[0] = np.clip(gaze_pos[0], 0, image_in.shape[1])
-    gaze_pos[1] = np.clip(gaze_pos[1], 0, image_in.shape[0])
+    gaze_pos[0] = np.clip(gaze_pos[0], 0, mw)
+    gaze_pos[1] = np.clip(gaze_pos[1], 0, mh)
     gaze_pos = tuple(np.round(gaze_pos).astype(int))
 
-    image_out = visualize_gaze_clusters(image_in, gaze_pos)
+    output_img = visualize_gaze_clusters(output_img, gaze_pos)
 
     # 반투명 원형 표시 그리기
-    overlay = image_out.copy()
+    overlay = output_img.copy()
     cv2.circle(overlay, gaze_pos, 10, (20, 20, 250), -1)
-    cv2.addWeighted(overlay, 0.4, image_out, 0.6, 0, image_out)
+    cv2.addWeighted(overlay, 0.4, output_img, 0.6, 0, output_img)
 
-    return image_out
+    return output_img, gaze_pos
 
 
 # return 1.face detected?(T,F) 2.face_bbox(x_min, y_min, width, height) 3.yaw 4.pitch
@@ -216,8 +224,8 @@ def gaze_analysis(frame):
             yaw = yaw_predicted.cpu().detach().numpy() * np.pi / 180.0
             pitch = pitch_predicted.cpu().detach().numpy() * np.pi / 180.0
 
-            # yaw -= np.mean(yaw_err)
-            # pitch -= np.mean(pitch_err)
+            yaw -= np.mean(yaw_err)
+            pitch -= np.mean(pitch_err)
             # print(yaw, pitch)
 
             now = time.time()
@@ -227,6 +235,9 @@ def gaze_analysis(frame):
 
         return detected, (x_min, y_min, width, height), yaw[0], pitch[0]
 
+def concern(pos):
+    print(pos)
+    return True
 
 if __name__ == "__main__":
     gaze_initialize()
@@ -251,18 +262,20 @@ if __name__ == "__main__":
 
         if detected:
             # bbox & gaze 렌더링
-            frame = draw_gaze(face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3], frame, (yaw, pitch))
+            frame, gaze_pos = draw_gaze(face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3], frame, (yaw, pitch))
+            concentration = concern(gaze_pos)
+            print(concentration)
 
         cv2.putText(frame, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5, (0, 255, 0), 2)
+                    1, (50, 200, 50), 2)
         cv2.putText(frame, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5, (0, 255, 0), 2)
+                    1, (50, 200, 50), 2)
         if detected and -0.3 <= yaw <= 0.3 and -0.3 <= pitch <= 0.3:
             cv2.putText(frame, 'Look at me, look at me', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5, (0, 255, 0), 2)
+                        1, (50, 200, 50), 2)
         else:
             cv2.putText(frame, 'Hey, what r u doing?', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5, (0, 255, 0), 2)
+                        1, (50, 200, 50), 2)
 
         # 프레임을 화면에 표시
         cv2.imshow('Gaze Estimation', frame)

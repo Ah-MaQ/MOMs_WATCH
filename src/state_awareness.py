@@ -58,11 +58,19 @@ class ToTorchFormatTensor(object):
 
 image_size = 112
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 model = GenerateModel()
-model = torch.nn.DataParallel(model).cuda()
-saved_state_dict = torch.load("./state_dicts/dfer_trained.pth")
+model = torch.nn.DataParallel(model).to(device)
+saved_state_dict = torch.load("./state_dicts/dfer_trained.pth", map_location=device)
 model.load_state_dict(saved_state_dict)
+model.to(device)
 model.eval()    # 모델 평가 모드 설정
+
+import torch.onnx
+dummy_input = torch.randn(16, 3, 112, 112).to(device)
+torch.onnx.export(model.module, dummy_input, "model.onnx", input_names=['input'], output_names=['output'])
+exit()
 
 # 이미지 변환 설정
 transform = torchvision.transforms.Compose([GroupResize(image_size),
@@ -91,7 +99,7 @@ def state_awareness(frame):
         # 이미지 전처리
         images = transform(frames)
         images = torch.reshape(images, (-1, 3, image_size, image_size))
-        images = images.cuda()
+        images = images.to(device)
 
         # 예측
         output = model(images).cpu().detach()
@@ -118,7 +126,7 @@ if __name__ == "__main__":
                 print("프레임을 읽어올 수 없습니다.")
                 time.sleep(0.1)
                 continue  # 다음 프레임
-
+            frame.shape
             cur_state = state_awareness(frame)
             cv2.putText(frame, f'Your now in {cur_state}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (0, 255, 0), 2)
