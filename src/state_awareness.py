@@ -67,10 +67,6 @@ model.load_state_dict(saved_state_dict)
 model.to(device)
 model.eval()    # 모델 평가 모드 설정
 
-import torch.onnx
-dummy_input = torch.randn(16, 3, 112, 112).to(device)
-torch.onnx.export(model.module, dummy_input, "model.onnx", input_names=['input'], output_names=['output'])
-exit()
 
 # 이미지 변환 설정
 transform = torchvision.transforms.Compose([GroupResize(image_size),
