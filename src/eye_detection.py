@@ -5,7 +5,7 @@ from ultralytics import YOLO
 def yolo_initialize():
     global model, classNames
     # Load the YOLOv8 model
-    model = YOLO('./state_dicts/yolo_trained.pt')
+    model = YOLO('./state_dicts/yolo_trained_2.pt')
 
     classNames = ["r_iris", "l_iris", "r_eyelid", "l_eyelid", "r_center", "l_center"]
 
