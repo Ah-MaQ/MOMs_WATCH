@@ -6,6 +6,7 @@ opencv-python
 matplotlib 
 mediapipe
 flask
+flask_cors
 ultralytics
 dill
 scikit-learn

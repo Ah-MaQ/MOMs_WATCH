@@ -117,8 +117,8 @@ def draw_gaze(a, b, c, d, image_in, gaze_angles, mh=900, mw=1600):
     cv2.rectangle(output_img, (x1+a, y1+b), (x1+a+c, y1+b+d), (0, 255, 0), 1)
 
     pos = (int(x1 + a + c / 2.0), int(y1 + b + d / 4.0))
-    dx = -mw * np.sin(yaw) * np.cos(pitch)
-    dy = -mw * np.sin(pitch)
+    dx = -2 * mw * np.sin(yaw) * np.cos(pitch)
+    dy = -2 * mw * np.sin(pitch)
 
     if not np.isnan(dx) and not np.isnan(dy):
         pos_hist[0].append(pos[0] + dx)
@@ -144,8 +144,8 @@ def gaze_analysis(frame):
     yaw = [0]
 
     with torch.no_grad():
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = face_detector.process(frame_rgb)
+        # frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = face_detector.process(frame)
         if results.detections:
             detected = True
             face = results.detections[0]
@@ -211,16 +211,16 @@ if __name__ == "__main__":
             concentration = concern(gaze_pos)
             # print(concentration)
 
-        cv2.putText(frame, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
-        cv2.putText(frame, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
-        if detected and -0.3 <= yaw <= 0.3 and -0.3 <= pitch <= 0.3:
-            cv2.putText(frame, 'Look at me, look at me', (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
-        else:
-            cv2.putText(frame, 'Hey, what r u doing?', (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
+            cv2.putText(frame, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
+            cv2.putText(frame, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
+            if detected and -0.3 <= yaw <= 0.3 and -0.3 <= pitch <= 0.3:
+                cv2.putText(frame, 'Look at me, look at me', (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
+            else:
+                cv2.putText(frame, 'Hey, what r u doing?', (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
 
-        cv2.imshow('Gaze Estimation', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            cv2.imshow('Gaze Estimation', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
     cap.release()
     cv2.destroyAllWindows()
