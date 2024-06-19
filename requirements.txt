@@ -10,3 +10,4 @@ flask_cors
 ultralytics
 dill
 scikit-learn
+onnx

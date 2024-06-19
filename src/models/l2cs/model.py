@@ -1,5 +1,8 @@
-import torch.nn as nn
 import math
+import torch
+import torch.nn as nn
+import torch.onnx
+import torchvision
 
 
 class L2CS(nn.Module):
@@ -64,3 +67,14 @@ class L2CS(nn.Module):
         pre_yaw_gaze = self.fc_yaw_gaze(x)
         pre_pitch_gaze = self.fc_pitch_gaze(x)
         return pre_yaw_gaze, pre_pitch_gaze
+
+
+# if __name__ == "__main__":
+#     # 모델을 ONNX로 변환
+#     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#     model = L2CS(torchvision.models.resnet.Bottleneck, [3, 4, 6, 3], 90)
+#     saved_state_dict = torch.load('../../state_dicts/l2cs_trained.pkl', map_location=device)
+#     model.load_state_dict(saved_state_dict)
+#     dummy_input = torch.randn(1, 3, 448, 448)
+#
+#     torch.onnx.export(model, dummy_input, "l2cs_model.onnx")

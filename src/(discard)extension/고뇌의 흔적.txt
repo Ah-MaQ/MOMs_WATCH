@@ -1,0 +1,388 @@
+크롬 익스텐션을 개발하여 chrome 웹스토어에 올리고자 합니다.
+먼저 제가 하려는 주제는 사용자의 시선을 분석하여 사용자의 학습에 대한 집중도를 분석하고 감시해주는 서비스입니다.
+
+my-chrome-extension/
+│
+├── manifest.json
+│
+├── background.js
+│
+├── popup/
+│   ├── popup.html
+│   ├── popup.css
+│   ├── popup.js
+│
+├── cam/
+│   ├── webcam.html
+│   ├── webcam.css
+│   ├── webcam.js
+│   ├── tf.min.js
+│   ├── face-landmarks-detection.min.js
+│
+└── images/
+    ├── icon16.png
+    ├── icon48.png
+    ├── icon128.png
+    ├── logo.png
+    ├── loading.gif
+
+먼저 UI와 대략적인 시나리오에 대해서 말씀드리겠습니다. 사용자가 크롬 익스텐션을 다운받아 추가하게 되면 팝업창에는 상단에 로고 이미지가 띄워져 있고 그 아래로 "Start" 버튼과 "Visualize" 버튼, 문구를 출력하는 빈 공간이 존재합니다. "Start"버튼 클릭시 사용자에게 카메라 권한을 요청하게 되며, 이후 웹캠이미지를 수집하여 영상처리를 수행하여 사용자가 집중하고있다면 팝업창에 "열공중"이라는 문구를, 집중하지 못하고 있다면 "집중부족"이라는 문구를 팝업창에 띄울수 있도록 하며, 웹캠 이미지에 문제가 있다면 "카메라 권한을 허용해주세요."라는 안내 문구를 띄울수 있도록 합니다. 영상처리는 사용자의 웹캠이미지를 받아오면 딥러닝 모델을 통해 사용자의 시선 정보를 계산하여 필요한 정보를 반환합니다. 이 정보에는 사용자의 집중도를 포함하여 사용장 얼굴의 위치정보, 눈의 랜드마크 정보, 시선의 점좌표 정보 등을 포함하여 JSON 형식으로 반환합니다. 마지막으로 "Visualize" 버튼이 활성화되면 현재 사용자를 분석하는 과정을 실시간으로 보여주어 얼굴이 크롭된 모습과 눈의 위치 시선의 위치가 그려지는 웹페이지 탭을 생성하게 됩니다.
+
+아래는 현재까지 작성한 코드 및 파일들의 일부이지만 서버로 이미지 정보를 제공하고 다시 이미지 정보를 반환하고 있습니다. 실시간성이 저해되는 문제로 json 등의 형식으로 필요한 정보를 모아 반환하여 클라이언트 환경에서 바로 시각화가 가능하도록 바꾸고 싶습니다. 
+
+```manifest.json
+{
+   "manifest_version": 3,
+
+   "name": "Mom's Watch",
+   "description": "집중도 추적 프로그램",
+   "version": "1.0.0",
+
+   "action": {
+      "default_popup": "popup/popup.html",
+      "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+      }
+   },
+
+   "icons": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+   },
+
+   "background": {
+      "service_worker": "background.js"
+   },
+   "content_security_policy":
+    {"extension_pages":"script-src 'self' ; script-src-elem 'self' ; object-src 'self';"
+   },
+    "permissions": [ "storage", "alarms", "notifications","identity", "identity.email"]
+}
+```
+```background.js
+chrome.runtime.onInstalled.addListener(details => {
+    if (details.reason === "install") {
+        chrome.storage.local.set({ switch: false });
+    }
+});
+
+let timerInterval, stopwatchInterval;
+
+let stopwatchData = {
+    time: 0,
+    running: false,
+    startTime: Date.now()
+};
+
+let timerData = {
+    time: 600000, // 10분
+    running: false,
+    startTime: Date.now()
+};
+
+// 초기 데이터 로드
+chrome.storage.local.get(['stopwatchData', 'timerData'], result => {
+    stopwatchData = result.stopwatchData || stopwatchData;
+    timerData = result.timerData || timerData;
+
+    if (stopwatchData.running) startStopwatch();
+    if (timerData.running) startTimer();
+});
+
+const startStopwatch = () => {
+    if (stopwatchInterval) clearInterval(stopwatchInterval);
+    stopwatchInterval = setInterval(() => {
+        if (stopwatchData.running) {
+            stopwatchData.time += 1000;
+            saveData();
+        }
+    }, 1000);
+};
+
+const startTimer = () => {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (timerData.running) {
+            timerData.time -= 1000;
+            if (timerData.time <= 0) {
+                timerData.time = 0;
+                stopTimer();
+                chrome.windows.create({
+                    url: chrome.runtime.getURL('alarm.html'),
+                    type: 'popup',
+                    width: 300,
+                    height: 200
+                });
+            }
+            saveData();
+        }
+    }, 1000);
+};
+
+const stopStopwatch = () => {
+    stopwatchData.running = false;
+    clearInterval(stopwatchInterval);
+    saveData();
+};
+
+const stopTimer = () => {
+    timerData.running = false;
+    clearInterval(timerInterval);
+    saveData();
+};
+
+const saveData = () => {
+    chrome.storage.local.set({ stopwatchData, timerData });
+};
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    const actions = {
+        startStopwatch: () => {
+            stopwatchData.running = true;
+            stopwatchData.startTime = Date.now() - stopwatchData.time;
+            startStopwatch();
+        },
+        stopStopwatch: stopStopwatch,
+        resetStopwatch: () => {
+            stopwatchData.time = 0;
+            stopwatchData.running = false;
+            stopwatchData.startTime = Date.now();
+            saveData();
+        },
+        startTimer: () => {
+            timerData.running = true;
+            timerData.startTime = Date.now() - (600000 - timerData.time);
+            startTimer();
+        },
+        stopTimer: stopTimer,
+        resetTimer: () => {
+            timerData.time = 600000;
+            timerData.running = false;
+            timerData.startTime = Date.now();
+            saveData();
+        },
+        updateTimer: () => {
+            timerData.time = request.time;
+            saveData();
+        },
+        getTimerData: () => sendResponse({ stopwatchData, timerData }),
+        saveButtonState: () => chrome.storage.local.set({ buttonState: request.buttonState }),
+        saveSelectedMenu: () => chrome.storage.local.set({ selectedMenu: request.selectedMenu })
+    };
+    if (actions[request.action]) actions[request.action]();
+});
+```
+```popup/popup.js
+document.getElementById('startButton').addEventListener('click', () => {
+  chrome.tabs.create({ url: '../cam/webcam.html' });
+});
+```
+```popup/popup.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mom's Watch</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="container">
+    <img src="../images/logo.png">
+    <button id="startButton">Start</button>
+    <button id="visualizeButton">Visualize</button>
+    <p id="status"></p>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+```cam/webcam.js
+const originalVideo = document.getElementById('originalVideo');
+const processedVideo = document.getElementById('processedVideo');
+
+const constraints = {
+  video: true
+};
+
+// Start capturing video from the webcam
+navigator.mediaDevices.getUserMedia(constraints)
+  .then((stream) => {
+    originalVideo.srcObject = stream;
+
+    // Set up a canvas to capture frames from the webcam
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    // Send frames to the server at regular intervals
+    setInterval(() => {
+      canvas.width = originalVideo.videoWidth;
+      canvas.height = originalVideo.videoHeight;
+
+      // Draw the current frame on the canvas
+      context.drawImage(originalVideo, 0, 0, canvas.width, canvas.height);
+
+      // Convert the canvas content to a Blob and send it to the server
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const formData = new FormData();
+          formData.append('frame', blob, 'frame.jpg');
+          fetch('http://127.0.0.1:5000/upload_frame', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => {
+            console.log('Frame uploaded:', response.status);
+          })
+          .catch(error => console.error('Error uploading frame:', error));
+        }
+      }, 'image/jpeg');
+    }, 500); // Adjust the interval as needed
+
+    // Start fetching and displaying the processed stream
+    fetchProcessedStream();
+
+  }).catch((error) => {
+    console.error('Error accessing the webcam:', error);
+  });
+
+function fetchProcessedStream() {
+  // Create a MediaSource object
+  const mediaSource = new MediaSource();
+  processedVideo.src = URL.createObjectURL(mediaSource);
+
+  mediaSource.addEventListener('sourceopen', () => {
+    const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://127.0.0.1:5000/stream', true);
+    xhr.responseType = 'blob';
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        sourceBuffer.appendBuffer(xhr.response);
+      } else {
+        console.error('Failed to load stream:', xhr.status);
+      }
+    };
+
+    xhr.onerror = () => {
+      console.error('XHR request failed:', xhr.status);
+    };
+
+    xhr.send();
+  });
+
+  mediaSource.addEventListener('sourceended', () => {
+    console.log('Stream ended');
+  });
+}
+```
+```app.py
+import io
+import cv2
+import time
+import threading
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+
+from flask import Flask, request, Response
+from flask_cors import CORS
+
+from gaze_analysis import gaze_initialize, gaze_analysis, draw_gaze
+from eye_detection import yolo_initialize, detect
+# from state_awareness import state_initialize, state_aware
+
+app = Flask(__name__)
+CORS(app)
+
+# 전역 변수로 처리된 프레임 저장
+processed_frame = None
+frame_lock = threading.Lock()  # Add a lock for thread safety
+
+@app.route('/upload_frame', methods=['POST'])
+def upload_frames():
+    global processed_frame
+    try:
+        file = request.files['frame']
+        frame = Image.open(file.stream)
+        frame = np.array(frame)
+
+        # Process the frame
+        processed = process_frame(frame)
+
+        with frame_lock:
+            processed_frame = processed
+
+        # 프레임 수신 확인 로그 메시지
+        app.logger.info("Frame received")
+
+        return '', 204
+
+    except Exception as e:
+        app.logger.error(f"Error processing frame: {e}")
+        return '', 500
+
+def process_frame(frame):
+    frame = cv2.flip(frame, 1)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    detected, face_bbox, yaw, pitch = gaze_analysis(frame)
+
+    detected_cls = detect(frame)
+    # cur_state = state_aware(frame)
+    visualed_img = frame.copy()
+
+    if detected:
+        visualed_img, _ = draw_gaze(face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3], frame, (yaw, pitch))
+
+        y1 = (visualed_img.shape[0] - frame.shape[0]) // 2
+        x1 = (visualed_img.shape[1] - frame.shape[1]) // 2
+        if "r_iris" in detected_cls and "r_eyelid" in detected_cls:
+            xc, yc, eye_r = detected_cls["r_iris"]
+            cv2.circle(visualed_img, (x1 + xc, y1 + yc), eye_r, (0, 0, 255), thickness=1)
+
+        if "l_iris" in detected_cls and "l_eyelid" in detected_cls:
+            xc, yc, eye_r = detected_cls["l_iris"]
+            cv2.circle(visualed_img, (x1 + xc, y1 + yc), eye_r, (0, 0, 255), thickness=1)
+
+        cv2.putText(visualed_img, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (50, 200, 50), 2)
+        cv2.putText(visualed_img, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (50, 200, 50), 2)
+        if detected and -0.3 <= yaw <= 0.3 and -0.3 <= pitch <= 0.3:
+            cv2.putText(visualed_img, 'Look at me, look at me', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
+                        1, (50, 200, 50), 2)
+            # cv2.putText(visualed_img, f'Your now in {cur_state}', (10, 150), cv2.FONT_HERSHEY_SIMPLEX,
+            #             1, (50, 200, 50), 2)
+        else:
+            cv2.putText(visualed_img, 'Hey, what r u doing?', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
+                        1, (50, 200, 50), 2)
+
+    return visualed_img
+
+@app.route('/stream')
+def stream():
+    def generate():
+        while True:
+            with frame_lock:
+                if processed_frame is not None:
+                    _, jpeg = cv2.imencode('.jpg', processed_frame)
+                    frame = jpeg.tobytes()
+                    yield (b'--frame\r\n'
+                           b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+            time.sleep(0.1)  # Adjust the sleep time as needed
+
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+if __name__ == '__main__':
+    gaze_initialize()
+    yolo_initialize()
+    # state_initialize()
+
+    app.run(debug=True)
+```
+클라이언트 환경에 모든 내용을 넣을 수는 없기 때문에 지금처럼 서버를 별도로 두어 영상처리를 통해 결과를 json형태로 수집할 수 있도록 필요한 모든 파일을 작성해주세요. 제공한 파일 및 코드들은 참고용이니 최적화하거나 더 나은 방향으로 수정할 필요가 있다면 수정해주시면 됩니다.
