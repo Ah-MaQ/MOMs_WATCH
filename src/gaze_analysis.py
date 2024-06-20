@@ -3,74 +3,215 @@ import time
 import numpy as np
 import mediapipe as mp
 from collections import deque
-from sklearn.cluster import DBSCAN
 
 import torch
 import torch.backends.cudnn as cudnn
 import torchvision
 from torchvision import transforms
 
+from ultralytics import YOLO
 from models.l2cs.model import L2CS
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='google.protobuf')
-import absl.logging
-absl.logging.set_verbosity(absl.logging.ERROR)
 
-def gaze_initialize():
-    global device, model, face_detector, softmax, idx_tensor, transform, \
-        err_cnt, pitch_err, yaw_err, pos_hist, dx_correction, dy_correction
+# 설정
+cudnn.enabled = True
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    cudnn.enabled = True
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# L2CS model 구성
+model = L2CS(torchvision.models.resnet.Bottleneck, [3, 4, 6, 3], 90)    # ResNet50
+saved_state_dict = torch.load('./state_dicts/l2cs_trained.pkl')
+model.load_state_dict(saved_state_dict)
+model.to(device)
+model.eval()    # 모델 평가 모드 설정
 
-    # L2CS model initialization
-    model = L2CS(torchvision.models.resnet.Bottleneck, [3, 4, 6, 3], 90)
-    saved_state_dict = torch.load('./state_dicts/l2cs_trained.pkl', map_location=device)
-    model.load_state_dict(saved_state_dict)
-    model.to(device)
-    model.eval()
+# YOLOv8 모델 로드
+yolo = YOLO('./state_dicts/yolo_trained_2.pt')
+classNames = ["r_iris", "l_iris", "r_eyelid", "l_eyelid", "r_center", "l_center"]
 
-    # MediaPipe face detection initialization
-    mp_face_detection = mp.solutions.face_detection
-    face_detector = mp_face_detection.FaceDetection(min_detection_confidence=0.5)
+# 얼굴 인식 모델 구성
+mp_face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
 
-    # Other initializations
-    softmax = torch.nn.Softmax(dim=1)
-    idx_tensor = torch.FloatTensor([idx for idx in range(90)]).to(device)
-    transform = transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((448, 448)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
+# To get predictions in degrees
+softmax = torch.nn.Softmax(dim=1)
+idx_tensor = torch.arange(90, dtype=torch.float32).to(device)
 
-    err_cnt = time.time()
-    pitch_err = deque(maxlen=30)  # 30 프레임 동안의 데이터를 저장
-    yaw_err = deque(maxlen=30)
-    pos_hist = [deque(maxlen=3), deque(maxlen=3)]
+# 이미지 변환 설정
+transform = transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.Resize((448, 448)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
 
-    dx_correction = 0
-    dy_correction = 0
+# calibration
+pos_hist = [deque(maxlen=3), deque(maxlen=3)]
+# 30 프레임 동안의 데이터를 저장
+pitch_err = deque(maxlen=31)
+yaw_err = deque(maxlen=31)
+dx_correction = 0
+dy_correction = 0
+# 졸음 감지
+blinking_cnt = deque(maxlen=50)
+
+prev_frame = None
+
+def eye_detection(frame):
+    results = yolo(frame)
+    detected_cls = {}
+    blinking_L = True
+    blinking_R = True
+
+    for r in results:
+        boxes = r.boxes
+        for box in boxes:
+            cls = classNames[int(box.cls[0])]
+
+            if cls in classNames[:4]:
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                xc = (x1 + x2) // 2
+                yc = (y1 + y2) // 2
+                width = x2 - x1
+                height = y2 - y1
+                eye_r = (width + height) // 4
+
+                detected_cls[cls] = [xc, yc, eye_r, height]
+
+        if "l_iris" in detected_cls and "l_eyelid" in detected_cls:
+            _, _, iris, _ = detected_cls["l_iris"]
+            _, _, _, height = detected_cls["l_eyelid"]
+            if height > 0.5 * iris:
+                blinking_L = False
+
+        if "r_iris" in detected_cls and "r_eyelid" in detected_cls:
+            _, _, iris, _ = detected_cls["r_iris"]
+            _, _, _, height = detected_cls["r_eyelid"]
+            if height > 0.5 * iris:
+                blinking_R = False
+
+    return (blinking_L, blinking_R), detected_cls
 
 def calculate_correction():
     global dx_correction, dy_correction
 
-    # 초기화 기간 동안의 평균값을 보정값으로 설정
-    if len(yaw_err) == 30 and len(pitch_err) == 30:
-        dx_correction = -np.mean(yaw_err)
-        dy_correction = -np.mean(pitch_err)
+    dx_correction = -np.mean(yaw_err)
+    dy_correction = -np.mean(pitch_err)
 
-def visualize_gaze_clusters(frame, gaze_pos, max_points=100, eps=30, min_samples=5):
-    if not hasattr(visualize_gaze_clusters, 'gaze_positions'):
-        visualize_gaze_clusters.gaze_positions = []
-    visualize_gaze_clusters.gaze_positions.append(gaze_pos)
+    return dx_correction, dy_correction
 
-    gaze_positions = visualize_gaze_clusters.gaze_positions[-max_points:]
+def gaze_analysis(frame):
+    global prev_frame
+    with torch.no_grad():
+        blinking, detected_cls = eye_detection(frame)
+        # 눈 깜박일때는 이전 프레임 사용
+        if all(blinking) and prev_frame is not None:
+            frame = prev_frame.copy()
 
-    db = DBSCAN(eps=eps, min_samples=min_samples).fit(gaze_positions)
-    labels = db.labels_
-    unique_labels = set(labels)
+        # 얼굴 인식
+        detector = mp_face_detection.process(frame)
+        if detector.detections:
+            detected = True
+            face = detector.detections[0]
+
+            # 이미지 자르기
+            bbox = face.location_data.relative_bounding_box
+            x_min = max(int(bbox.xmin * frame.shape[1]), 0)
+            y_min = max(int(bbox.ymin * frame.shape[0]), 0)
+            width = int(bbox.width * frame.shape[1])
+            height = int(bbox.height * frame.shape[0])
+
+            face_img = frame[y_min:y_min + height, x_min:x_min + width]
+            face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
+            face_img = transform(face_img).unsqueeze(0).to(device)
+
+            prev_frame = frame.copy()
+
+            # 예측
+            yaw_predicted, pitch_predicted = model(face_img)
+            yaw_predicted = softmax(yaw_predicted)
+            pitch_predicted = softmax(pitch_predicted)
+
+            # Get continuous predictions in degrees.
+            yaw_predicted = torch.sum(yaw_predicted * idx_tensor, dim=1) * 4 - 180
+            pitch_predicted = torch.sum(pitch_predicted * idx_tensor, dim=1) * 4 - 180
+
+            yaw = yaw_predicted.cpu().numpy() * np.pi / 180.0
+            pitch = pitch_predicted.cpu().numpy() * np.pi / 180.0
+            yaw, pitch = yaw[0], pitch[0]
+
+            if len(yaw_err) < 30:
+                yaw_err.append(yaw)
+                pitch_err.append(pitch)
+            else:
+                dx_correction, dy_correction = calculate_correction()
+                yaw += dx_correction
+                pitch += dy_correction
+
+            return blinking, detected_cls, detected, (x_min, y_min, width, height), yaw, pitch
+        return blinking, detected_cls, False, (0,0,0,0), 0, 0
+
+def draw_eyes(blink, eye, frame, x1, y1):
+    if "r_iris" in eye and "r_eyelid" in eye:
+        xc, yc, eye_r, _ = eye["r_iris"]
+        cv2.circle(frame, (x1 + xc, y1 + yc), eye_r, (0, 0, 255), thickness=1)
+
+    if "l_iris" in eye and "l_eyelid" in eye:
+        xc, yc, eye_r, _ = eye["l_iris"]
+        cv2.circle(frame, (x1 + xc, y1 + yc), eye_r, (0, 0, 255), thickness=1)
+
+    blinking_cnt.append(blink)
+    state = "Awake"
+
+    if len(blinking_cnt) < blinking_cnt.maxlen:
+        return frame, state
+
+    else:
+        # 눈 깜박임 및 감긴 시간 분석
+        blink_count = 0
+        consecutive_closed = 0
+        eye_closed_duration = 0
+        frame_rate = 10
+        blink_threshold = 5
+        close_threshold = 2
+
+        for (blinking_L, blinking_R) in blinking_cnt:
+            if blinking_L or blinking_R:
+                consecutive_closed += 1
+            else:
+                if consecutive_closed > 0:
+                    # 깜박임 카운트 증가 (두 눈 중 하나만 감겨 있거나 동시에 감긴 경우)
+                    blink_count += 1
+                    # 눈이 감겨 있는 시간 누적 (0.1초 단위)
+                    eye_closed_duration += consecutive_closed * (1 / frame_rate)
+                    consecutive_closed = 0
+
+        # 마지막 연속된 눈 감김 처리
+        if consecutive_closed > 0:
+            blink_count += 1
+            eye_closed_duration += consecutive_closed * (1 / frame_rate)
+
+        # 졸음 또는 수면 상태 판단
+        if eye_closed_duration >= close_threshold:
+            state = "Sleeping"
+        elif blink_count <= (5 * blink_threshold) / 60:  # 1분 기준으로 환산
+            state = "Drowsy"
+
+        if state != "Awake":
+            cv2.putText(frame, f"({state}) Don't Sleep!", (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
+                      1, (0, 0, 0), 2)
+
+        return frame, state
+
+def visualize_gaze(frame, gaze_pos, max_points=100, eps=30, min_samples=5):
+    if not hasattr(visualize_gaze, 'gaze_positions'):
+        visualize_gaze.gaze_positions = []
+    visualize_gaze.gaze_positions.append(gaze_pos)
+
+    gaze_positions = visualize_gaze.gaze_positions[-max_points:]
 
     result_frame = frame.copy()
     num_points = len(gaze_positions)
@@ -81,118 +222,64 @@ def visualize_gaze_clusters(frame, gaze_pos, max_points=100, eps=30, min_samples
         alpha = weights[i]
         overlay = result_frame.copy()
         cv2.circle(overlay, (int(x), int(y)), 5, color, -1)
-        result_frame = cv2.addWeighted(overlay, alpha, result_frame, 1 - alpha, 0)
+        cv2.addWeighted(overlay, alpha, result_frame, 1 - alpha, 0, result_frame)
 
-    # # 클러스터 중심 표시
-    # for label in unique_labels:
-    #     if label == -1:
-    #         continue  # 노이즈는 무시
-    #
-    #     class_member_mask = (labels == label)
-    #     xy = np.array(gaze_positions)[class_member_mask]
-    #
-    #     # 클러스터 중심 계산
-    #     centroid = np.mean(xy, axis=0).astype(int)
-    #
-    #     # 클러스터 중심을 큰 원으로 표시
-    #     cv2.circle(result_frame, tuple(centroid), 15, (0, 0, 255), 2)
-    #     cv2.putText(result_frame, f'Cluster {label}', tuple(centroid),
-    #                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+    overlay = result_frame.copy()
+    cv2.circle(overlay, gaze_pos, 10, (20, 20, 250), -1)
+    cv2.addWeighted(overlay, 0.4, result_frame, 0.6, 0, result_frame)
+
     return result_frame
 
-def draw_gaze(a, b, c, d, image_in, gaze_angles, mh=900, mw=1600):
-    if len(yaw_err) == 30 and len(pitch_err) == 30:
-        calculate_correction()  # 보정값 계산
+def concern(pos, aoi):
+    if aoi['x_min'] <= pos[0] <= aoi['x_max'] and aoi['y_min'] <= pos[1] <= aoi['y_max']:
+        return "Doing well! (attentive)"
+    else:
+        return "Keep your eyes on the screen"
 
-    yaw, pitch = gaze_angles
-
+def draw_gaze(flag, blink, eye, a, b, c, d, image_in, gaze_angles, mh=720, mw=1280):
     y1 = (mh - image_in.shape[0]) // 2
     y2 = y1 + image_in.shape[0]
     x1 = (mw - image_in.shape[1]) // 2
     x2 = x1 + image_in.shape[1]
 
-    output_img = np.ones((mh, mw, 3), dtype=np.uint8) * 200
-    output_img[y1:y2, x1:x2] = image_in
+    image_out = np.ones((mh, mw, 3), dtype=np.uint8) * 200
+    image_out[y1:y2, x1:x2] = image_in.copy()
+    state = "Awake"
 
-    cv2.rectangle(output_img, (x1+a, y1+b), (x1+a+c, y1+b+d), (0, 255, 0), 1)
+    if not flag:
+        return image_out, state
 
-    pos = (int(x1 + a + c / 2.0), int(y1 + b + d / 4.0))
-    dx = -2 * mw * np.sin(yaw) * np.cos(pitch)
-    dy = -2 * mw * np.sin(pitch)
+    else:
+        yaw, pitch = gaze_angles
 
-    if not np.isnan(dx) and not np.isnan(dy):
-        pos_hist[0].append(pos[0] + dx)
-        pos_hist[1].append(pos[1] + dy)
+        cv2.rectangle(image_out, (x1+a, y1+b), (x1+a+c, y1+b+d), (0, 255, 0), 1)
 
-    gaze_pos = [np.mean(pos_hist[0]), np.mean(pos_hist[1])]
-    gaze_pos[0] = np.clip(gaze_pos[0], 0, mw)
-    gaze_pos[1] = np.clip(gaze_pos[1], 0, mh)
-    gaze_pos = tuple(np.round(gaze_pos).astype(int))
+        image_out, state = draw_eyes(blink, eye, image_out, x1, y1)
 
-    output_img = visualize_gaze_clusters(output_img, gaze_pos)
+        pos = (int(x1 + a + c / 2.0), int(y1 + b + d / 4.0))
+        dx = -2 * mw * np.sin(yaw) * np.cos(pitch)
+        dy = -2 * mw * np.sin(pitch)
 
-    overlay = output_img.copy()
-    cv2.circle(overlay, gaze_pos, 10, (20, 20, 250), -1)
-    cv2.addWeighted(overlay, 0.4, output_img, 0.6, 0, output_img)
+        if not np.isnan(dx) and not np.isnan(dy):
+            pos_hist[0].append(pos[0] + dx)
+            pos_hist[1].append(pos[1] + dy)
 
-    return output_img, gaze_pos
+        gaze_pos = [np.mean(pos_hist[0]), np.mean(pos_hist[1])]
+        gaze_pos[0] = np.clip(gaze_pos[0], 0, mw)
+        gaze_pos[1] = np.clip(gaze_pos[1], 0, mh)
+        gaze_pos = tuple(np.round(gaze_pos).astype(int))
 
-def gaze_analysis(frame):
-    detected = False
-    x_min, y_min, width, height = 0, 0, 0, 0
-    pitch = [0]
-    yaw = [0]
+        image_out = visualize_gaze(image_out, gaze_pos)
 
-    with torch.no_grad():
-        # frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = face_detector.process(frame)
-        if results.detections:
-            detected = True
-            face = results.detections[0]
-            bbox = face.location_data.relative_bounding_box
+        cv2.putText(image_out, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (20, 200, 20), 2)
+        cv2.putText(image_out, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (20, 200, 20), 2)
 
-            x_min = int(bbox.xmin * frame.shape[1])
-            if x_min < 0: x_min = 0
-            y_min = int(bbox.ymin * frame.shape[0])
-            if y_min < 0: y_min = 0
+        return image_out, state
 
-            width = int(bbox.width * frame.shape[1])
-            height = int(bbox.height * frame.shape[0])
-
-            face_img = frame[y_min:y_min + height, x_min:x_min + width]
-            face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
-
-            face_img = transform(face_img)
-            face_img = face_img.to(device)
-            face_img = face_img.unsqueeze(0)
-
-            yaw_predicted, pitch_predicted = model(face_img)
-            yaw_predicted = softmax(yaw_predicted)
-            pitch_predicted = softmax(pitch_predicted)
-
-            yaw_predicted = torch.sum(yaw_predicted.data * idx_tensor, dim=1) * 4 - 180
-            pitch_predicted = torch.sum(pitch_predicted.data * idx_tensor, dim=1) * 4 - 180
-
-            yaw = yaw_predicted.cpu().detach().numpy() * np.pi / 180.0
-            pitch = pitch_predicted.cpu().detach().numpy() * np.pi / 180.0
-            yaw, pitch = yaw[0], pitch[0]
-
-            if len(yaw_err) < 30:  # 초기화 기간 동안
-                yaw_err.append(yaw)
-                pitch_err.append(pitch)
-            else:
-                # 보정값 적용
-                yaw += dx_correction
-                pitch += dy_correction
-
-    return detected, (x_min, y_min, width, height), yaw, pitch
-
-def concern(pos):
-    return True
 
 if __name__ == "__main__":
-    gaze_initialize()
-
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         raise IOError("웹캠을 사용할 수 없습니다.")
@@ -204,23 +291,15 @@ if __name__ == "__main__":
             continue
 
         frame = cv2.flip(frame, 1)
-        detected, face_bbox, yaw, pitch = gaze_analysis(frame)
+        blink, detected_cls, detected, face_bbox, yaw, pitch = gaze_analysis(frame)
 
         if detected:
-            frame, gaze_pos = draw_gaze(face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3], frame, (yaw, pitch))
-            concentration = concern(gaze_pos)
-            # print(concentration)
+            frame, state = draw_gaze(detected, blink, detected_cls, face_bbox[0], face_bbox[1],
+                                     face_bbox[2], face_bbox[3], frame, (yaw, pitch))
 
-            cv2.putText(frame, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
-            cv2.putText(frame, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
-            if detected and -0.3 <= yaw <= 0.3 and -0.3 <= pitch <= 0.3:
-                cv2.putText(frame, 'Look at me, look at me', (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
-            else:
-                cv2.putText(frame, 'Hey, what r u doing?', (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 200, 50), 2)
-
-            cv2.imshow('Gaze Estimation', frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        cv2.imshow('Gaze Estimation', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     cap.release()
     cv2.destroyAllWindows()

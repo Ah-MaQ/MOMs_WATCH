@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="../../dist/auth.bundle.js" defer></script>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-title-container">
+        <div class="login-title">Login</div>
+    </div>
+
+
+
+    <form class="login-form" id="login-form">
+
+        <div class="login-input">
+            <input type="email" id="email" name="email" placeholder="E-mail">
+        </div>
+
+        <div class="login-input">
+            <input type="password" id="password" name="password" placeholder="Password">
+        </div>
+
+        <div class="button">
+            <div class="login-button" id="login-button">Log in</div>
+            <div class="goto-register-button" id="goto-register-button">Register</div>
+        </div>
+    </form>
+
+    <div id = "user-info" style="display: none;"></div>
+    <div class="button" id="data-button" style="display: none;">Data</div>
+</body>
+</html>
+

@@ -49,7 +49,7 @@ def boundingbox_show(filename):
   image = cv2.imread(image_path)
   image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # OpenCV는 BGR 형식이므로 RGB로 변환
 
-  colors = [(255,0,0),(230,20,0),(200,50,20),(100,100,100),(50,200,0),(0,0,250)]
+  colors = [(255,0,0),(230,20,0),(200,50,20),(100,200,250),(50,200,0),(0,0,250)]
 
   image_height, image_width = image.shape[:2]
   for label in yolo_labels:
