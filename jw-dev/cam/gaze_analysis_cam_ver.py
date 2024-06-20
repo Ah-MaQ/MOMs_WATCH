@@ -7,6 +7,7 @@ import torch
 import torch.backends.cudnn as cudnn
 import torchvision
 from torchvision import transforms
+from ultralytics import YOLO
 from models.l2cs.model import L2CS
 
 # 설정
@@ -22,6 +23,9 @@ model.eval()    # 모델 평가 모드 설정
 
 # 얼굴 인식 모델 구성
 mp_face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
+
+model_yolo = YOLO('./cam/state_dicts/yolo_trained.pt')
+classNames = ["r_iris", "l_iris", "r_eyelid", "l_eyelid", "r_center", "l_center"]
 
 # To get predictions in degrees
 softmax = torch.nn.Softmax(dim=1)
@@ -45,7 +49,6 @@ pitch_err = deque(maxlen=31)
 yaw_err = deque(maxlen=31)
 dx_correction = 0
 dy_correction = 0
-
 
 def calculate_correction():
     # 초기화 기간 동안의 평균값을 보정값으로 설정
@@ -161,8 +164,74 @@ def draw_gaze(a, b, c, d, image_in, yaw_pitch, mw=1600, mh=900):
     cv2.circle(overlay, gaze_pos, 10, (20, 20, 250), -1)
     cv2.addWeighted(overlay, 0.4, image_out, 0.6, 0, image_out)
 
-    return image_out
+    return image_out, gaze_pos
 
+
+def concern(pos, aoi):
+    if aoi['x_min'] <= pos[0] <= aoi['x_max'] and aoi['y_min'] <= pos[1] <= aoi['y_max']:
+        return "Doing well! (attentive)"
+    else:
+        return "Keep your eyes on the screen"
+
+
+def evaluate_focus(gaze_positions, std_threshold=10, dpi=96):
+    if len(gaze_positions) < 2:
+        return "Please stay focused"
+
+    positions = np.array(gaze_positions)
+    num_positions = len(positions)
+    weights = np.linspace(0.1, 1.0, num_positions)
+    mean_position = np.average(positions, axis=0, weights=weights)
+    variance = np.average((positions - mean_position) ** 2, axis=0, weights=weights)
+    std_dev = np.sqrt(variance)
+
+    if np.any(std_dev * 2.54 / dpi > std_threshold):  # cm 단위로 변환
+        return "Please stay focused"
+    else:
+        return "Doing well! (Focused)"
+
+
+# 관심 영역 설정 (화면의 가장자리 1cm 마진 제외, 아래쪽 제외) 강의실 23인치 모니터
+def define_aoi(monitor_height=31.0, monitor_width=52.0, monitor_horizontal_res=1920, monitor_vertical_res=1080, margin_cm=1):
+    diagonal_res = (monitor_horizontal_res ** 2 + monitor_vertical_res ** 2) ** 0.5
+    diagonal_size_inch = (monitor_height ** 2 + monitor_width ** 2) ** 0.5
+    dpi = diagonal_res / diagonal_size_inch
+
+    popup_height = 9  # 팝업창 디멘션. 눈대중으로 지정
+    popup_width = 16  # 팝업창 디멘션. 눈대중으로 지정
+
+    h = int(dpi * popup_height)  # 팝업창의 세로 픽셀수
+    w = int(dpi * popup_width)  # 팝업창의 가로 픽셀수
+    margin_pixels = int(dpi * margin_cm / 2.54)  # cm를 픽셀로 변환 (1인치=2.54cm)
+
+    aoi = {
+        'x_min': margin_pixels,
+        'x_max': w - margin_pixels,
+        'y_min': 6 * margin_pixels,
+        'y_max': float('inf') #아래쪽 마진 없음
+    }
+    return aoi, dpi
+
+
+def detect(frame):
+    results = model_yolo(frame)
+    detected_cls = {}
+
+    for r in results:
+        boxes = r.boxes
+        for box in boxes:
+            cls = classNames[int(box.cls[0])]
+
+            if cls in classNames[:4]:
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                xc = (x1 + x2) // 2
+                yc = (y1 + y2) // 2
+                width = x2 - x1
+                height = y2 - y1
+                eye_r = (width + height) // 4
+
+                detected_cls[cls] = [xc, yc, eye_r]
+    return detected_cls
 
 
 if __name__ == "__main__":
@@ -172,6 +241,18 @@ if __name__ == "__main__":
     if not cap.isOpened():
         raise IOError("웹캠을 사용할 수 없습니다.")
 
+    aoi = None
+    dpi = None
+
+    # 동공이 감지되지 않은 시간을 추적하기 위한 타이머
+    no_r_iris_time = 0
+    no_l_iris_time = 0
+
+    start_time_r = None
+    start_time_l = None
+
+    warning_message = ""
+
     while True:
         # 비디오 읽기
         success, frame = cap.read()
@@ -179,24 +260,57 @@ if __name__ == "__main__":
         if not success:
             print("프레임을 읽어올 수 없습니다.")
             time.sleep(0.1)
-            continue    # 다음 프레임
+            continue  # 다음 프레임
+
+        frame = cv2.flip(frame, 1)
+        if aoi is None:
+            aoi, dpi = define_aoi()
+
+        detected_cls = detect(frame)
+
+        current_time = time.time()
+
+        if "r_iris" in detected_cls and "r_eyelid" in detected_cls:
+            xc, yc, eye_r = detected_cls["r_iris"]
+            cv2.circle(frame, (xc, yc), eye_r, (0, 0, 255), thickness=1)
+            no_r_iris_time = 0
+            start_time_r = None
+        else:
+            if start_time_r is None:
+                start_time_r = current_time
+            no_r_iris_time = current_time - start_time_r
+
+        if "l_iris" in detected_cls and "l_eyelid" in detected_cls:
+            xc, yc, eye_r = detected_cls["l_iris"]
+            cv2.circle(frame, (xc, yc), eye_r, (0, 0, 255), thickness=1)
+            no_l_iris_time = 0
+            start_time_l = None
+        else:
+            if start_time_l is None:
+                start_time_l = current_time
+            no_l_iris_time = current_time - start_time_l
+
+        if no_r_iris_time >= 5 and no_l_iris_time >= 5:
+            warning_message = "Eyes open, sweetheart"
 
         detected, face_bbox, yaw, pitch = gaze_analysis(frame)
 
         if detected:
             # bbox & gaze 렌더링
-            frame = draw_gaze(face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3], frame, (yaw, pitch))
+            frame, gaze_pos = draw_gaze(face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3], frame, (yaw, pitch))
+            concentration_status = concern(gaze_pos, aoi)
+            focus_status = evaluate_focus(visualize_gaze_clusters.gaze_positions, dpi=dpi)
 
-        cv2.putText(frame, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                    1, (0, 255, 0), 2)
-        cv2.putText(frame, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX,
-                    1, (0, 255, 0), 2)
-        if detected and -0.3 <= yaw <= 0.3 and -0.3 <= pitch <= 0.3:
-            cv2.putText(frame, 'Look at me, look at me', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
-                        1, (0, 255, 0), 2)
-        else:
-            cv2.putText(frame, 'Hey, what r u doing?', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
-                        1, (0, 255, 0), 2)
+            cv2.putText(frame, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        1, (50, 200, 50), 2)
+            cv2.putText(frame, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX,
+                        1, (50, 200, 50), 2)
+            cv2.putText(frame, concentration_status, (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
+                        1, (50, 200, 50), 2)
+            cv2.putText(frame, focus_status, (10, 150), cv2.FONT_HERSHEY_SIMPLEX,
+                        1, (50, 200, 50), 2)
+            cv2.putText(frame, warning_message, (10, 190), cv2.FONT_HERSHEY_SIMPLEX,
+                        1, (0, 0, 255), 2)
 
         # 프레임을 화면에 표시
         cv2.imshow('Gaze Estimation', frame)
@@ -208,3 +322,45 @@ if __name__ == "__main__":
     # 웹캠과 창 해제
     cap.release()
     cv2.destroyAllWindows()
+    # # 웹캠 초기화
+    # cap = cv2.VideoCapture(0)
+    #
+    # if not cap.isOpened():
+    #     raise IOError("웹캠을 사용할 수 없습니다.")
+    #
+    # while True:
+    #     # 비디오 읽기
+    #     success, frame = cap.read()
+    #
+    #     if not success:
+    #         print("프레임을 읽어올 수 없습니다.")
+    #         time.sleep(0.1)
+    #         continue    # 다음 프레임
+    #
+    #     detected, face_bbox, yaw, pitch = gaze_analysis(frame)
+    #
+    #     if detected:
+    #         # bbox & gaze 렌더링
+    #         frame = draw_gaze(face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3], frame, (yaw, pitch))
+    #
+    #     cv2.putText(frame, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+    #                 1, (0, 255, 0), 2)
+    #     cv2.putText(frame, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX,
+    #                 1, (0, 255, 0), 2)
+    #     if detected and -0.3 <= yaw <= 0.3 and -0.3 <= pitch <= 0.3:
+    #         cv2.putText(frame, 'Look at me, look at me', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
+    #                     1, (0, 255, 0), 2)
+    #     else:
+    #         cv2.putText(frame, 'Hey, what r u doing?', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
+    #                     1, (0, 255, 0), 2)
+    #
+    #     # 프레임을 화면에 표시
+    #     cv2.imshow('Gaze Estimation', frame)
+    #
+    #     # 'q' 키를 누르면 종료
+    #     if cv2.waitKey(1) & 0xFF == ord('q'):
+    #         break
+    #
+    # # 웹캠과 창 해제
+    # cap.release()
+    # cv2.destroyAllWindows()
