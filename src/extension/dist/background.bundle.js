@@ -66,7 +66,7 @@ var _startTimer = function startTimer() {
         timerData.time = 0;
         stopTimer();
         chrome.windows.create({
-          url: chrome.runtime.getURL('alarm.html'),
+          url: chrome.runtime.getURL('page/alarm/alarm.html'),
           type: 'popup',
           width: 300,
           height: 200
@@ -128,18 +128,28 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         timerData: timerData
       });
     },
-    saveButtonState: function saveButtonState() {
+    saveButtonState: function saveButtonState(state) {
       return chrome.storage.local.set({
-        buttonState: request.buttonState
+        buttonState: state
       });
     },
-    saveSelectedMenu: function saveSelectedMenu() {
+    // 상태 저장 로직
+    saveSelectedMenu: function saveSelectedMenu(menu) {
       return chrome.storage.local.set({
-        selectedMenu: request.selectedMenu
+        selectedMenu: menu
+      });
+    },
+    // 메뉴 저장 로직
+    triggerAlarm: function triggerAlarm() {
+      chrome.windows.create({
+        url: chrome.runtime.getURL('page/alarm/alarm.html'),
+        type: 'popup',
+        width: 300,
+        height: 200
       });
     }
   };
-  if (actions[request.action]) actions[request.action]();
+  if (actions[request.action]) actions[request.action](request.state || request.menu);
 });
 /******/ })()
 ;

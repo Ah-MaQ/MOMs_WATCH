@@ -46,7 +46,7 @@ const startTimer = () => {
                 timerData.time = 0;
                 stopTimer();
                 chrome.windows.create({
-                    url: chrome.runtime.getURL('alarm.html'),
+                    url: chrome.runtime.getURL('page/alarm/alarm.html'),
                     type: 'popup',
                     width: 300,
                     height: 200
@@ -104,8 +104,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             saveData();
         },
         getTimerData: () => sendResponse({ stopwatchData, timerData }),
-        saveButtonState: () => chrome.storage.local.set({ buttonState: request.buttonState }),
-        saveSelectedMenu: () => chrome.storage.local.set({ selectedMenu: request.selectedMenu })
+        saveButtonState: (state) => chrome.storage.local.set({ buttonState: state }), // 상태 저장 로직
+        saveSelectedMenu: (menu) => chrome.storage.local.set({ selectedMenu: menu }), // 메뉴 저장 로직
+        triggerAlarm: () => {
+            chrome.windows.create({
+                url: chrome.runtime.getURL('page/alarm/alarm.html'),
+                type: 'popup',
+                width: 300,
+                height: 200
+            });
+        }
     };
-    if (actions[request.action]) actions[request.action]();
+    if (actions[request.action]) actions[request.action](request.state || request.menu);
 });

@@ -337,7 +337,7 @@ body *:lang(ko) {
     cursor: text;
     outline: none;
     border: none;
-    cursor:
+    cursor: pointer;
 }
 
 .editable {
@@ -501,7 +501,7 @@ body *:lang(ko) {
     font-family: 'Noto Sans KR', sans-serif;
 }
 
-.database-container {
+.study-end-container {
     display: flex;
     flex-direction: column;
     padding: 10px 0px;
@@ -509,7 +509,7 @@ body *:lang(ko) {
     box-sizing: border-box;
 }
 
-.database-container .database-button {
+.study-end-container .study-end-button {
     background-color: #FF7907;
     color: white;
     display: flex;
@@ -522,7 +522,7 @@ body *:lang(ko) {
     font-family: 'Poppins', sans-serif;
 }
 
-.database-container .database-text {
+.study-end-container .study-end-text {
     width: 100%;
     height: 50px;
     padding: 10px 0px;
@@ -539,3 +539,6 @@ body *:lang(ko) {
     text-align: center;
     font-family: 'Noto Sans KR', sans-serif;
 }
+
+
+

@@ -26,5 +26,5 @@
    "content_security_policy": 
     {"extension_pages":"script-src 'self' ; script-src-elem 'self' ; object-src 'self';"
    },
-    "permissions": [ "storage", "alarms", "notifications","identity", "identity.email"]
+    "permissions": [ "storage", "alarms", "notifications","identity", "identity.email", "tabs"]
 }

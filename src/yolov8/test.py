@@ -3,7 +3,7 @@ import numpy as np
 from ultralytics import YOLO
 
 # Load the YOLOv8 model
-model = YOLO('weights/best.pt')
+model = YOLO('../state_dicts/yolo_trained_2.pt')
 
 classNames = ["r_iris", "l_iris", "r_eyelid", "l_eyelid", "r_center", "l_center"]
 
@@ -45,7 +45,8 @@ while cap.isOpened():
             cv2.circle(frame, (xc, yc), eye_r, (0, 0, 255), thickness=1)
 
         # Display the annotated frame
-        cv2.imshow("Eye Detect", frame)
+        cv2.imshow("Results", results[0].plot())
+
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord("q"):
