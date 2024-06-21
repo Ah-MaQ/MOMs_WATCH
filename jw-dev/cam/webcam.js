@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     async function startWebcam() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });  // 해상도 축소
             const video = document.createElement('video');
             video.srcObject = stream;
             video.play();
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
 
-            setInterval(sendFrame, 1000 / 10);  // 10 fps로 전송
+            setInterval(sendFrame, 1000 / 10);  // 전송 주기를 10 fps로 줄임
         } catch (error) {
             console.error('Error accessing the webcam:', error);
         }
@@ -108,5 +108,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
     startWebcam();
     startProcessedStream();  // 서버에서 처리된 스트림 시작
-    setInterval(updateStatus, 500);
+    setInterval(updateStatus, 1000);  // 상태 업데이트 주기를 1초로 설정
 });
