@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
 
-            setInterval(sendFrame, 1000 / 10);  // 30 fps로 전송
+            setInterval(sendFrame, 1000 / 10);  // 10 fps로 전송
         } catch (error) {
             console.error('Error accessing the webcam:', error);
         }
@@ -50,6 +50,24 @@ document.addEventListener("DOMContentLoaded", function() {
             processedStream.src = 'http://127.0.0.1:5000/stream';
         } catch (error) {
             console.error('Error starting processed stream:', error);
+        }
+    }
+
+    async function updateStatus() {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/get_status');
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);  // 받은 데이터를 콘솔에 출력
+
+                // 필요한 경우 DOM 요소를 업데이트
+                const statusElement = document.getElementById('status');
+                statusElement.textContent = `Detected: ${data.is_there}, Make Alarm: ${data.make_alarm}`;
+            } else {
+                console.error('Network response was not ok');
+            }
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
         }
     }
 
@@ -90,4 +108,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
     startWebcam();
     startProcessedStream();  // 서버에서 처리된 스트림 시작
+    setInterval(updateStatus, 500);
 });
