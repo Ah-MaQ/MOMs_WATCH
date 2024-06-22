@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+  <title>MOM's WATCH</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+  <style>
+    .no-transition {
+      transition: none !important;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <img src="../images/icon48.png" alt="mom's watch" class="inline-image">
+      <span class="inline-text">MOM's WATCH</span>
+      <div class="button-container">
+          <button id="setting_button" class="png-button">
+            <img src="../images/setting_button.png" alt="setting" class="button-image">
+          </button>
+          <button id="account_button" class="png-button">
+            <img src="../images/account_button.png" alt="account" class="button-image">
+          </button>
+      </div>
+    </div>
+  </header>
+
+    <div class="container2">
+      <span class="cyft">Check your focus time!</span>
+      <label class="switch switch1">
+      <input type="checkbox" id="toggle1">
+      <span class="slider slider1"></span>
+      </label>
+    </div>
+
+
+  <footer>
+    <div class="navigation-container">
+      <button data-page="timerSection" class="navigation-button left active">
+        <span class="navigation-icon icon-timer"></span>
+        <span data-i18n="aside_timer">Timer</span>
+      </button>
+      <button data-page="stopwatchSection" class="navigation-button right">
+        <span class="navigation-icon icon-stopwatch"></span>
+        <span data-i18n="aside_stopwatch">Stopwatch</span>
+      </button>
+    </div>
+  </footer>
+
+  <div id="timerSection" class="section">
+    <div class="timerInput">
+      <label for="minutesInput"> 분 입력: </label>
+      <input type="number" id="minutesInput" min="0">
+    </div>
+    <div>
+      <button id="startButton">공부하기!</button>
+    </div>
+    <div id="time">00:00</div>
+  </div>
+
+  <div id="stopwatchSection" class="section" style="display: none;">
+    <div class="stopwatch">
+      <input type="number" id="minutes" placeholder="분" min="0" max="59">
+      <span id="time">00:00</span>
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+      <button id="reset">Reset</button>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <script src="popup.js"></script>
+</body>
+</html>
