@@ -17,7 +17,7 @@ pip install -r requirements.txt
 Extension
 │
 ├── /.idea    개발환경 설정값이 저장된 폴더입니다.
-├── /api      heroku api 설정 폴더입니다.
+├── /api      heroku api 설정 폴더입니다. 별도로 다운받아야 사용 가능합니다. 
 ├── /cam     모델이 웹캠 인풋을 처리하고 익스텐션에 전달하는 폴더입니다.
 ├── /dist     웹팩 번들링 결과물이 저장된 폴더입니다.
 ├── /images  UI 아이콘이 저장된 폴더입니다.
@@ -30,3 +30,5 @@ Extension
 ├── requirements.txt 모델 개발에 필요한 라이브러리를 정의합니다.
 ├── webpack.config.cjs 웹팩 번들링의 설정을 정의합니다.
 ```
+
+API 다운 : https://drive.google.com/file/d/10K9r0jV_N07v07y9scV3Ois-N3Ko6UWQ/view?usp=sharing

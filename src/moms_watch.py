@@ -16,11 +16,13 @@ frame_queue = queue.Queue(maxsize=5)  # 큐 크기를 줄여서 지연 감소
 processed_frame_queue = queue.Queue(maxsize=5)
 
 prevTime = time.time()
+value = 0
+lack_focus = 0.0
 is_there = True
 make_alarm = False
 
 def process_frames():
-    global prevTime, is_there, make_alarm
+    global prevTime, value, lack_focus, is_there, make_alarm
     while True:
         frame = frame_queue.get()
         if frame is None:
@@ -34,19 +36,37 @@ def process_frames():
 
         blink, detected_cls, detected, face_bbox, yaw, pitch = gaze_analysis(frame)
 
-        visualed_img, state = draw_gaze(detected, blink, detected_cls, face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3],
-                                        frame, (yaw, pitch), visual_h, visual_w)
+        visualed_img, state, concern = draw_gaze(detected, blink, detected_cls, face_bbox[0], face_bbox[1], face_bbox[2], face_bbox[3],
+                                                 frame, (yaw, pitch), visual_h, visual_w)
 
         is_there = detected
         make_alarm = True if state != "Awake" else False
 
-        # 프레임 수 계산
         curTime = time.time()
-        fps = 1 / (curTime - prevTime)
+        runTime = curTime - prevTime
+        fps = 1 / runTime
         prevTime = curTime
-        # 프레임 수 문자열에 저장
-        fps_str = "FPS : %0.1f" % fps
+        fps_str = f"FPS : {fps:.1f}"
+
         cv2.putText(visualed_img, fps_str, (visual_w - 200, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+
+        if concern:
+            value += 3 * runTime
+            if value > 100: value = 100
+        else:
+            lack_focus += runTime
+            value -= 2 * runTime
+            if value < 0: value = 0
+
+        bar_width = 440
+        x = (visual_w - bar_width) // 2
+        cv2.rectangle(visualed_img, (x-10, 650), (x + bar_width + 10, 680), (50, 50, 50), -1)
+        fill_width = int(bar_width * (value / 100))
+
+        cv2.rectangle(visualed_img, (x, 655), (x + fill_width, 675), (0, 250, 250), -1)
+
+        cv2.putText(visualed_img, f'Lack of Focus Time : {lack_focus:.2f} s', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (20, 200, 20), 2)
 
         # 처리된 프레임을 큐에 넣기 전에 큐 크기를 확인하고 오래된 프레임을 버림
         if processed_frame_queue.full():
@@ -95,11 +115,12 @@ def stream():
 
 @app.route('/get_status', methods=['GET'])
 def get_status():
-    global is_there, make_alarm
+    global is_there, make_alarm, lack_focus
 
     response = {
         'is_there': is_there,
-        'make_alarm': make_alarm
+        'make_alarm': make_alarm,
+        'lack_focus': lack_focus
     }
     return jsonify(response)
 
