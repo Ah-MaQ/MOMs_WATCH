@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
-from gaze_analysis import gaze_analysis, draw_gaze
+from gaze_analysis import gaze_analysis, draw_gaze, put_Text
 
 app = Flask(__name__)
 CORS(app)
@@ -31,6 +31,14 @@ def process_frames():
         frame = cv2.flip(frame, 1)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+        ori_height, ori_width = frame.shape[:2]
+        tar_height = 480
+        tar_width = int(ori_width * tar_height / ori_height)
+        frame = cv2.resize(frame, (tar_width, tar_height))
+        if tar_width > 640:
+            crop_x = (tar_width - 640) // 2
+            frame = frame[:,crop_x:crop_x+640]
+
         visual_h = 720
         visual_w = 1280
 
@@ -46,9 +54,6 @@ def process_frames():
         runTime = curTime - prevTime
         fps = 1 / runTime
         prevTime = curTime
-        fps_str = f"FPS : {fps:.1f}"
-
-        cv2.putText(visualed_img, fps_str, (visual_w - 200, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
 
         if concern:
             value += 3 * runTime
@@ -58,15 +63,7 @@ def process_frames():
             value -= 2 * runTime
             if value < 0: value = 0
 
-        bar_width = 440
-        x = (visual_w - bar_width) // 2
-        cv2.rectangle(visualed_img, (x-10, 650), (x + bar_width + 10, 680), (50, 50, 50), -1)
-        fill_width = int(bar_width * (value / 100))
-
-        cv2.rectangle(visualed_img, (x, 655), (x + fill_width, 675), (0, 250, 250), -1)
-
-        cv2.putText(visualed_img, f'Lack of Focus Time : {lack_focus:.2f} s', (10, 110), cv2.FONT_HERSHEY_SIMPLEX,
-                    1, (20, 200, 20), 2)
+        visualed_img = put_Text(visualed_img, yaw, pitch, state, concern, int(curTime%100), value, fps)
 
         # 처리된 프레임을 큐에 넣기 전에 큐 크기를 확인하고 오래된 프레임을 버림
         if processed_frame_queue.full():

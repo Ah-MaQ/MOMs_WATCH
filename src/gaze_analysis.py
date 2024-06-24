@@ -2,7 +2,7 @@ import cv2
 import time
 import numpy as np
 import mediapipe as mp
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from collections import deque
 
 import torch
@@ -197,18 +197,18 @@ def user_state(blinking, eyes_open):
             if blinking_buffer[i]:
                 continuous_closed_count += 1
                 if continuous_closed_count >= continuous_closed_time * 10:
-                    return "sleep"
+                    return "Sleep"
             else:
                 continuous_closed_count = 0
 
         # 상태 판별
         if eyes_closed_count >= eyes_closed_threshold:
-            return "drowsy"
+            return "Drowsy"
         else:
-            return "awake"
+            return "Awake"
 
     # 버퍼가 꽉 차지 않았을 때는 기본 상태 반환
-    return "awake"
+    return "Awake"
 
 def draw_eyes(blinking, eye, frame, dx, dy):
     eyes_open = False
@@ -226,13 +226,13 @@ def draw_eyes(blinking, eye, frame, dx, dy):
 
     return frame, state
 
-def evaluate_focus(coords, state, width, std_threshold=10, decay_rate=0.9):
+def evaluate_focus(coords, state, width, std_threshold=20, decay_rate=0.9):
     n = len(coords)
     if n < 2:
         return True
 
     margin = 50
-    if state != "awake":
+    if state != "Awake":
         concern = False
 
     else: # sleepy or drawsy
@@ -315,12 +315,58 @@ def draw_gaze(flag, blink, eye, a, b, c, d, image_in, gaze_angles, mh=720, mw=12
 
     image_out, concern = visualize_gaze(image_out, gaze_pos, state)
 
-    cv2.putText(image_out, f'Yaw: {yaw:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                1, (20, 200, 20), 2)
-    cv2.putText(image_out, f'Pitch: {pitch:.2f}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX,
-                1, (20, 200, 20), 2)
-
     return image_out, state, concern
+
+def put_Text(frame, yaw, pitch, state, concern, index, value, fps):
+    font1 = ImageFont.truetype('fonts/PretendardVariable.ttf', 20)
+    font2 = ImageFont.truetype('fonts/Pretendard-SemiBold.ttf', 25)
+    font3 = ImageFont.truetype('fonts/Pretendard-SemiBold.ttf', 40)
+
+    pil_img = Image.fromarray(frame)
+    draw = ImageDraw.Draw(pil_img)
+
+    draw.text((10, 630), f"Yaw  : {yaw:.2f}",   font=font1, fill=(20, 150, 20, 0))
+    draw.text((9, 660), f"Pitch : {pitch:.2f}", font=font1, fill=(20, 150, 20, 0))
+
+    states = {'Awake':'정상', 'Drowsy':'졸음', 'Sleep':'수면'}
+    draw.text((10, 690), f"State: {states[state]}", font=font1, fill=(20, 150, 20, 0))
+
+    wise = ["지식에 대한 투자는 \n\n최고의 보상을 \n\n가져다 줄 것이다.\n\n\n- Benjamin Franklin -",
+            "많은 실패자들은 \n\n포기하기 때문에 \n\n성공이 얼마나 가까웠는지 \n\n깨닫지 못합니다.\n\n\n- Thomas Edison -",
+            "미루는 것은 \n\n쉬운 일을 어렵게 만들고 \n\n어려운 일을 더 어렵게 만든다.\n\n\n– Mason Cooley -",
+            "더 이상 상황을 \n\n바꿀 수 없을 때 \n\n우리는 스스로를 \n\n변화시켜야 합니다.\n\n\n– Viktor Frankl -",
+            "성적이나 결과는 \n\n행동이 아니라 습관입니다.\n\n\n- Aristoteles -",
+            "시작하기 위해 \n\n위대해질 필요는 없지만 \n\n위대해지기 위해서는 \n\n시작해야 합니다.\n\n\n- Zig Ziglar -",
+            "배움의 아름다운 점은 \n\n아무도 당신에게서 \n\n그것을 빼앗을 수 \n\n없다는 것입니다.\n\n\n- B.B. King -",
+            "나는 공부를 좋아하지 않는다. \n\n나는 공부를 싫어한다. \n\n나는 배우는 것을 좋아한다. \n\n배움은 아름답다.\n\n\n- Natalie Portman -",
+            "우리는 우리가 하기를 \n\n원하는 무엇이든 할 수 있다. \n\n만약 우리가 그것에 \n\n충분히 오랫동안 매달린다면\n\n\n- Helen Keller -",
+            "물에 빠져서가 아니라, \n\n물속에 가라앉은 채로 \n\n있기 때문에 익사하는 것이다.\n\n\n- Paulo Coelho -"]
+
+    draw.text((980, 120), wise[index//10], font=font2, fill=(20, 20, 20, 0))
+
+
+    if not concern or value < 40:
+        v_text = "집중력이 떨어지고 있습니다. 학습에 집중하세요."
+    else:
+        v_text = " 열심히 집중하고 있군요! 언제나 화이팅입니다."
+    draw.text((405, 675), v_text, font=font2, fill=(255, 255, 255, 0))
+
+
+    draw.text((1180, 690), f"FPS: {fps:.1f}", font=font1, fill=(0, 0, 0, 0))
+
+    draw.text((15,10), "Mom's Watch", font=font3, fill=(7, 121, 255, 0))
+
+    frame = np.array(pil_img)
+
+    bar_width = 440
+    x = (1280 - bar_width) // 2
+    cv2.rectangle(frame, (x - 10, 630), (x + bar_width + 10, 660), (50, 50, 50), -1)
+    fill_width = int(bar_width * (value / 100))
+
+    cv2.rectangle(frame, (x, 635), (x + fill_width, 655), (7, 121, 255), -1)
+
+    return frame
+
 
 if __name__ == "__main__":
     prevTime = time.time()
@@ -337,6 +383,13 @@ if __name__ == "__main__":
             continue
 
         frame = cv2.flip(frame, 1)
+        ori_height, ori_width = frame.shape[:2]
+        tar_height = 480
+        tar_width = int(ori_width * tar_height / ori_height)
+        frame = cv2.resize(frame, (tar_width, tar_height))
+        if tar_width > 640:
+            crop_x = (tar_width - 640) // 2
+            frame = frame[:,crop_x:crop_x+640]
 
         blink, detected_cls, detected, face_bbox, yaw, pitch = gaze_analysis(frame)
 
@@ -347,7 +400,9 @@ if __name__ == "__main__":
         runTime = curTime - prevTime
         fps = 1 / runTime
         prevTime = curTime
-        fps_str = f"FPS : {fps:.1f}"
+
+        visual_h = 720
+        visual_w = 1280
 
         if concern:
             value += 3 * runTime
@@ -357,16 +412,7 @@ if __name__ == "__main__":
             value -= 2 * runTime
             if value < 0: value = 0
 
-        visual_h = 720
-        visual_w = 1280
-        cv2.putText(frame, fps_str, (visual_w - 200, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-
-        bar_width = 440
-        x = (visual_w - bar_width) // 2
-        cv2.rectangle(frame, (x-10, 650), (x + bar_width + 10, 680), (50, 50, 50), -1)
-        fill_width = int(bar_width * (value / 100))
-
-        cv2.rectangle(frame, (x, 655), (x + fill_width, 675), (0, 250, 250), -1)
+        frame = put_Text(frame, yaw, pitch, state, concern, int(curTime%100), value, fps)
 
         cv2.imshow('Gaze Estimation', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
