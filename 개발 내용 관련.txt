@@ -1,0 +1,17 @@
+팀명 : AHMA-Q
+프로젝트명 : Mom's Watch
+팀원 : 강진우, 김민준, 김승환, 유지우, 유진수, 이시영
+
+깃허브 주소
+    https://github.com/Ah-MaQ/MOMs_WATCH
+
+모델 및 데이터셋
+    AI Hub - 디스플레이 중심 안구 움직임 영상 데이터
+    https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=data&dataSetSn=71421
+
+    데이터셋 활용 - 안구 검출을 위한 모델 학습 데이터
+    ▶ YOLOv8 학습에 사용하여 사용자의 눙동자(iris)와 눈꺼풀(eyelid) 감지하도록 함
+    ▶ 학습 에포크 수 : 20, 배치 크기 : 64, 이미지 크기 : 640, 데이터 증강 사용 : True
+
+    제공 AI모델 활용 - 시선 분석을 위한 모델 사용 (사전 학습된 가중치 파일도 제공됨)
+    ▶ L2CS 모델을 불러와 시선의 상하 기울기(pitch), 좌우 기울기(yaw)를 반환함
