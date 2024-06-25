@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var pipButton = document.getElementById('pipButton');
   var fullscreenButton = document.getElementById('fullscreenButton');
   var popupButton = document.getElementById('popupButton');
+  var alarmCount = 0;
+  var noDetectionCount = 0;
   function startWebcam() {
     return _startWebcam.apply(this, arguments);
   }
@@ -164,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
           case 3:
             response = _context7.sent;
             if (!response.ok) {
-              _context7.next = 14;
+              _context7.next = 15;
               break;
             }
             _context7.next = 7;
@@ -177,27 +179,45 @@ document.addEventListener("DOMContentLoaded", function () {
             statusElement = document.getElementById('status');
             statusElement.textContent = "Detected: ".concat(data.is_there, ", Make Alarm: ").concat(data.make_alarm);
             if (data.make_alarm === true) {
-              chrome.runtime.sendMessage({
-                action: 'triggerAlarm'
-              });
-              console.log("triggwwee");
+              alarmCount += 1;
+              if (alarmCount >= 7) {
+                chrome.runtime.sendMessage({
+                  action: 'triggerAlarm'
+                });
+                alarmCount = 0; // 메시지를 보낸 후 카운터 초기화
+              }
+            } else {
+              alarmCount = 0; // 알람이 false이면 카운터 초기화
             }
-            _context7.next = 15;
+
+            //임시로 true -> 나중에 false로
+            if (data.is_there === false) {
+              noDetectionCount += 1;
+              if (noDetectionCount >= 5) {
+                chrome.runtime.sendMessage({
+                  action: 'noDetection'
+                });
+                noDetectionCount = 0; // 메시지를 보낸 후 카운터 초기화
+              }
+            } else {
+              noDetectionCount = 0; // 감지가 true이면 카운터 초기화
+            }
+            _context7.next = 16;
             break;
-          case 14:
-            console.error('Network response was not ok');
           case 15:
-            _context7.next = 20;
+            console.error('Network response was not ok');
+          case 16:
+            _context7.next = 21;
             break;
-          case 17:
-            _context7.prev = 17;
+          case 18:
+            _context7.prev = 18;
             _context7.t0 = _context7["catch"](0);
             console.error('There was a problem with the fetch operation:', _context7.t0);
-          case 20:
+          case 21:
           case "end":
             return _context7.stop();
         }
-      }, _callee7, null, [[0, 17]]);
+      }, _callee7, null, [[0, 18]]);
     }));
     return _updateStatus.apply(this, arguments);
   }
@@ -268,7 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var popup = window.open("", "popup", "width=640,height=480");
     popup.document.write("<img id=\"popupProcessedStream\" alt=\"Processed Stream\">");
     var popupProcessedStream = popup.document.getElementById('popupProcessedStream');
-    popupProcessedStream.src = processedStream.src;
+    popupProcessedStream.src = processsedStream.src;
   });
   startWebcam();
   startProcessedStream(); // 서버에서 처리된 스트림 시작

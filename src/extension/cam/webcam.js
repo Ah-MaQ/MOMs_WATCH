@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const fullscreenButton = document.getElementById('fullscreenButton');
     const popupButton = document.getElementById('popupButton');
     let alarmCount = 0;
+    let noDetectionCount = 0;
 
     async function startWebcam() {
         try {
@@ -11,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function() {
             const video = document.createElement('video');
             video.srcObject = stream;
             video.play();
-
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
 
@@ -67,12 +67,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 if (data.make_alarm === true) {
                     alarmCount += 1;
-                    if (alarmCount >= 10) {
+                    if (alarmCount >= 7) {
                         chrome.runtime.sendMessage({ action: 'triggerAlarm' });
                         alarmCount = 0; // 메시지를 보낸 후 카운터 초기화
                     }
                 } else {
                     alarmCount = 0; // 알람이 false이면 카운터 초기화
+                }
+
+//임시로 true -> 나중에 false로
+                if (data.is_there === false) {
+                    noDetectionCount += 1;
+                    if (noDetectionCount >= 5) {
+                        chrome.runtime.sendMessage({ action: 'noDetection' });
+                        noDetectionCount = 0; // 메시지를 보낸 후 카운터 초기화
+                    }
+                } else {
+                    noDetectionCount = 0; // 감지가 true이면 카운터 초기화
                 }
             } else {
                 console.error('Network response was not ok');
@@ -81,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('There was a problem with the fetch operation:', error);
         }
     }
+
 
     pipButton.addEventListener('click', async () => {
         if (processedStream.readyState >= processedStream.HAVE_METADATA) {
@@ -114,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const popup = window.open("", "popup", "width=640,height=480");
         popup.document.write(`<img id="popupProcessedStream" alt="Processed Stream">`);
         const popupProcessedStream = popup.document.getElementById('popupProcessedStream');
-        popupProcessedStream.src = processedStream.src;
+        popupProcessedStream.src = processsedStream.src;
     });
 
     startWebcam();

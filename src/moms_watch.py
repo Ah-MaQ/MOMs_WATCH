@@ -52,6 +52,7 @@ def process_frames():
 
         curTime = time.time()
         runTime = curTime - prevTime
+        if runTime > 0.15: runTime = 0.15
         fps = 1 / runTime
         prevTime = curTime
 

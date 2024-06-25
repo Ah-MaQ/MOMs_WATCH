@@ -9,7 +9,9 @@ module.exports = (env, argv) => {
       alarm: './page/alarm/alarm.js',
       auth: './auth.js', // auth.js 추가
       background: './background.js',
-      webcam: './cam/webcam.js'
+      webcam: './cam/webcam.js',
+      chart: './page/chart/chart.js', // chart.js 추가
+      focus: './webpage/focus/focus.js'
     },
     output: {
       filename: '[name].bundle.js',

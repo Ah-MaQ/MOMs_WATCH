@@ -36867,20 +36867,23 @@ function __disposeResources(env) {
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-/*!*****************************!*\
-  !*** ./page/popup/popup.js ***!
-  \*****************************/
+/*!********************************!*\
+  !*** ./webpage/focus/focus.js ***!
+  \********************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
 /* harmony import */ var firebase_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/auth */ "./node_modules/firebase/auth/dist/esm/index.esm.js");
 /* harmony import */ var firebase_firestore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! firebase/firestore */ "./node_modules/firebase/firestore/dist/esm/index.esm.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 
 
@@ -36895,811 +36898,118 @@ var firebaseConfig = {
 var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);
 var auth = (0,firebase_auth__WEBPACK_IMPORTED_MODULE_1__.getAuth)(app);
 var db = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__.getFirestore)(app);
-document.addEventListener("DOMContentLoaded", function () {
-  // 초기 변수 설정
-  var toggleBody = document.querySelector(".toggleBody");
-  var loginButton = document.getElementById('login-button');
-  var settingsButton = document.querySelector('.settings-button');
-  var stopwatchBtn = document.getElementById('stopwatch-btn');
-  var timerBtn = document.getElementById('timer-btn');
-  var startBtn = document.getElementById('start-btn');
-  var pauseBtn = document.getElementById('pause-btn');
-  var resetBtn = document.getElementById('reset-btn');
-  var alarmButton = document.querySelector('.alarm-button');
-  var muteButtonIcon = document.getElementById('mute-button');
-  var volumePopup = document.getElementById('volume-popup');
-  var volumeSlider = document.getElementById('volume-slider');
-  var muteButton = document.getElementById('mute-btn');
-  var dropdownButton = document.querySelector('.drop-button');
-  var dropdownContent = document.querySelector('.dropdown-content');
-  var addItemBtn = document.getElementById('add-item-btn');
-  var dropdown = document.querySelector('.dropdown');
-  var alarmAudio = new Audio(chrome.runtime.getURL('alarm.mp3'));
-  var isDropdownOpen = false;
-  var timerMode = false; // 기본 모드를 스톱워치로 설정
-  var running = false;
-  var interval;
-  var time = 0;
-  var startTime = 0;
-  var elapsedTime = 0;
-  var usedTimeInMinutes = 0;
-  var lack_focus = 0;
-
-  // 로그인 상태 확인 및 UI 업데이트
-  (0,firebase_auth__WEBPACK_IMPORTED_MODULE_1__.onAuthStateChanged)(auth, function (user) {
-    if (user) {
-      var email = user.email;
-      var uid = user.uid;
-      chrome.storage.local.set({
-        user: {
-          email: email,
-          uid: uid
-        }
-      }, function () {
-        loginButton.textContent = 'Data';
-        loginButton.addEventListener('click', function () {
-          window.location.href = "../chart/chart.html"; // chart 페이지로 리디렉션
-        });
-      });
-    } else {
-      chrome.storage.local.remove('user', function () {
-        loginButton.textContent = 'Login';
-        loginButton.addEventListener('click', function () {
-          window.location.href = "../login/login.html"; // Login 페이지로 리디렉션
-        });
-      });
-    }
-  });
-
-  // 초기 설정 로드
-  chrome.storage.local.get(['timerMode', 'buttonStateStopwatch', 'buttonStateTimer', 'selectedMenu', 'alarmVolume', 'alarmMuted', 'dropdownItems', 'selectedItem', 'stopwatchData', 'timerData', 'running', 'switch'], function (res) {
-    timerMode = res.timerMode !== undefined ? res.timerMode : false; // 초기 모드 설정
-    var data = timerMode ? res.timerData : res.stopwatchData;
-    var _ref = data || {
-      time: 0,
-      running: false,
-      startTime: Date.now()
-    };
-    time = _ref.time;
-    running = _ref.running;
-    startTime = _ref.startTime;
-    if (res.running === false) {
-      running = false;
-      setButtonState(pauseBtn); // pauseBtn 상태 설정
-    } else if (running) {
-      if (timerMode) {
-        startTime = Date.now() + time; // 남은 시간에서 시작
-      } else {
-        startTime = Date.now() - time; // 경과 시간에서 시작
-      }
-      interval = setInterval(updateTimer, 1000);
-    }
-
-    // 버튼 상태 로드
-    loadButtonState(res[timerMode ? 'buttonStateTimer' : 'buttonStateStopwatch']);
-    selectMenu(document.getElementById(res.selectedMenu || 'stopwatch-btn'));
-
-    // 알람 설정 로드
-    alarmAudio.volume = res.alarmVolume !== undefined ? res.alarmVolume : 0.5;
-    alarmAudio.muted = res.alarmMuted || false;
-    volumeSlider.value = alarmAudio.volume * 100;
-    muteButton.textContent = alarmAudio.muted ? 'Unmute' : 'Mute';
-    updateSliderBackground(volumeSlider);
-    updateAlarmIcon(alarmAudio.muted);
-
-    // 드롭다운 메뉴 로드
-    var items = res.dropdownItems || [];
-    items.forEach(addDropdownItem);
-    if (res.selectedItem) {
-      dropdown.querySelector('.dropdown-text').textContent = res.selectedItem;
-    }
-
-    // 초기화 시 타이머를 강제로 업데이트
-    if (timerMode) {
-      updateTimerDisplay(time);
-    } else {
-      updateStopwatchDisplay(time);
-    }
-
-    // toggleBody 상태 로드
-    if (res["switch"]) {
-      toggleBody.classList.add("on");
-    } else {
-      toggleBody.classList.remove("on");
-    }
-  });
-
-  // 설정 버튼 클릭 이벤트
-  settingsButton.addEventListener('click', function () {
-    var width = 800;
-    var height = 600;
-    var left = window.screen.width / 2 - width / 2;
-    var top = window.screen.height / 2 - height / 2;
-    window.open(chrome.runtime.getURL("../../webpage/settings.html"), 'Settings', "width=".concat(width, ",height=").concat(height, ",top=").concat(top, ",left=").concat(left));
-  });
-
-  // 모드 스위치
-  stopwatchBtn.addEventListener('click', function () {
-    return switchMode('stopwatch', stopwatchBtn);
-  });
-  timerBtn.addEventListener('click', function () {
-    return switchMode('timer', timerBtn);
-  });
-
-  // 타이머 조작 버튼
-  startBtn.addEventListener('click', function () {
-    return toggleRunning('start');
-  });
-  pauseBtn.addEventListener('click', function () {
-    return toggleRunning('pause');
-  });
-  resetBtn.addEventListener('click', resetTimer);
-
-  // 볼륨 조절 및 음소거 버튼 이벤트
-  alarmButton.addEventListener('click', toggleVolumePopup);
-  muteButtonIcon.addEventListener('click', toggleVolumePopup);
-  document.addEventListener('click', closeVolumePopupOnClickOutside);
-  volumeSlider.addEventListener('input', adjustVolume);
-  muteButton.addEventListener('click', toggleMute);
-
-  // 드롭다운 메뉴 이벤트
-  dropdownButton.addEventListener('click', toggleDropdown);
-  dropdownButton.addEventListener('mouseover', function () {
-    return changeDropdownStyle(true);
-  });
-  dropdownButton.addEventListener('mouseout', function () {
-    return changeDropdownStyle(false);
-  });
-  dropdownContent.addEventListener('mouseover', function () {
-    return changeDropdownBorder(true);
-  });
-  dropdownContent.addEventListener('mouseout', function () {
-    return changeDropdownBorder(false);
-  });
-  addItemBtn.addEventListener('click', createNewItemInput);
-
-  // 타이머 업데이트 함수
-  function updateTimer() {
-    if (running) {
-      if (timerMode) {
-        time = startTime - Date.now();
-        if (time <= 0) {
-          time = 0;
-          clearInterval(interval);
-          running = false;
-          chrome.runtime.sendMessage({
-            action: 'timerFinished'
-          });
-        }
-      } else {
-        time = Date.now() - startTime;
-      }
-      chrome.storage.local.set(_defineProperty({}, timerMode ? 'timerData' : 'stopwatchData', {
-        time: time,
-        running: running,
-        startTime: startTime
-      }));
-    }
-    updateTimerDisplay();
-  }
-
-  // 타이머 화면 업데이트 함수
-  function updateTimerDisplay(currentTime) {
-    var timeToDisplay = currentTime !== undefined ? currentTime : time;
-    var milliseconds = Math.floor(timeToDisplay % 1000 / 10);
-    var seconds = Math.floor(timeToDisplay / 1000) % 60;
-    var minutes = Math.floor(timeToDisplay / (1000 * 60)) % 60;
-    var hours = Math.floor(timeToDisplay / (1000 * 60 * 60));
-    document.getElementById('milliseconds').textContent = milliseconds.toString().padStart(2, '0');
-    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-  }
-  function updateStopwatchDisplay(currentTime) {
-    var timeToDisplay = currentTime !== undefined ? currentTime : 0;
-    var milliseconds = Math.floor(timeToDisplay % 1000 / 10);
-    var seconds = Math.floor(timeToDisplay / 1000) % 60;
-    var minutes = Math.floor(timeToDisplay / (1000 * 60)) % 60;
-    var hours = Math.floor(timeToDisplay / (1000 * 60 * 60));
-    document.getElementById('milliseconds').textContent = milliseconds.toString().padStart(2, '0');
-    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-  }
-
-  // 타이머/스톱워치 모드 전환 함수
-  function switchMode(mode, button) {
-    saveCurrentState();
-    timerMode = mode === 'timer';
-    chrome.storage.local.set({
-      timerMode: timerMode
-    });
-    chrome.runtime.sendMessage({
-      action: 'getTimerData'
-    }, function (result) {
-      var data = timerMode ? result.timerData : result.stopwatchData;
-      var _ref2 = data || {
-        time: 0,
-        running: false,
-        startTime: Date.now()
-      };
-      time = _ref2.time;
-      running = _ref2.running;
-      startTime = _ref2.startTime;
-      if (running) {
-        clearInterval(interval);
-        if (timerMode) {
-          startTime = Date.now() + time; // 남은 시간에서 시작
-        } else {
-          startTime = Date.now() - time; // 경과 시간에서 시작
-        }
-        interval = setInterval(updateTimer, 10);
-      }
-      if (timerMode) {
-        updateTimerDisplay();
-      } else {
-        updateStopwatchDisplay();
-      }
-    });
-    chrome.storage.local.get(timerMode ? 'buttonStateTimer' : 'buttonStateStopwatch', function (res) {
-      loadButtonState(res[timerMode ? 'buttonStateTimer' : 'buttonStateStopwatch']);
-    });
-    selectMenu(button);
-  }
-
-  // 타이머/스톱워치 시작/중지 함수
-  function toggleRunning(action) {
-    if (action === 'start' && !running || action === 'pause' && running) {
-      running = !running;
-      if (running) {
-        startTime = timerMode ? Date.now() + time : Date.now() - time;
-        interval = setInterval(updateTimer, 10);
-        chrome.runtime.sendMessage({
-          action: timerMode ? 'startTimer' : 'startStopwatch'
-        });
-        setButtonState(startBtn);
-      } else {
-        clearInterval(interval);
-        chrome.runtime.sendMessage({
-          action: timerMode ? 'stopTimer' : 'stopStopwatch'
-        });
-        setButtonState(pauseBtn);
-      }
-      chrome.runtime.sendMessage({
-        action: 'updateButtonState',
-        state: running ? 'start' : 'pause'
-      });
-    }
-  }
-
-  // 타이머 리셋 함수
-  function resetTimer() {
-    clearInterval(interval);
-    time = timerMode ? 0 : 0; // 타이머 모드에서 10분(600,000ms)으로 초기화
-    running = false;
-    startTime = Date.now();
-    updateTimerDisplay();
-    setButtonState(null);
-    chrome.runtime.sendMessage({
-      action: timerMode ? 'resetTimer' : 'resetStopwatch'
-    });
-    chrome.storage.local.set(_defineProperty({}, timerMode ? 'timerData' : 'stopwatchData', {
-      time: time,
-      running: running,
-      startTime: startTime
-    }));
-  }
-
-  // 버튼 상태 저장 및 로드 함수
-  function setButtonState(button) {
-    var isLoad = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-    startBtn.classList.remove('selected');
-    pauseBtn.classList.remove('selected');
-    startBtn.querySelector('svg path').style.fill = '#C0C0C0';
-    pauseBtn.querySelector('svg path').style.fill = '#C0C0C0';
-    if (button) {
-      button.classList.add('selected');
-      button.querySelector('svg path').style.fill = '#FA560C';
-    }
-    if (!isLoad) {
-      var state = button ? button.id : null;
-      chrome.storage.local.set(timerMode ? {
-        buttonStateTimer: state
-      } : {
-        buttonStateStopwatch: state
-      });
-    }
-  }
-  function loadButtonState(state) {
-    if (state) {
-      setButtonState(document.getElementById(state), true); // isLoad를 true로 설정하여 상태 불러오기
-    }
-  }
-
-  // 메뉴 선택 함수
-  function selectMenu(button) {
-    stopwatchBtn.classList.remove('selected');
-    timerBtn.classList.remove('selected');
-    button.classList.add('selected');
-    chrome.storage.local.set({
-      selectedMenu: button.id
-    });
-  }
-
-  // 현재 상태 저장 함수
-  function saveCurrentState() {
-    var state = startBtn.classList.contains('selected') ? 'start-btn' : pauseBtn.classList.contains('selected') ? 'pause-btn' : null;
-    chrome.storage.local.set(timerMode ? {
-      buttonStateTimer: state
-    } : {
-      buttonStateStopwatch: state
-    });
-    chrome.storage.local.set(_defineProperty({}, timerMode ? 'timerData' : 'stopwatchData', {
-      time: time,
-      running: running,
-      startTime: startTime
-    }));
-  }
-
-  // 볼륨 조절 및 음소거 관련 함수들
-  function toggleVolumePopup(event) {
-    event.stopPropagation();
-    volumePopup.style.display = volumePopup.style.display === 'block' ? 'none' : 'block';
-  }
-  function closeVolumePopupOnClickOutside(event) {
-    if (!event.target.closest('.head-button') && !event.target.closest('#volume-popup')) {
-      volumePopup.style.display = 'none';
-    }
-  }
-  function adjustVolume(event) {
-    updateSliderBackground(event.target);
-    var volume = event.target.value / 100;
-    alarmAudio.volume = volume;
-    alarmAudio.muted = volume === 0;
-    chrome.storage.local.set({
-      alarmVolume: volume,
-      alarmMuted: alarmAudio.muted
-    });
-    muteButton.textContent = alarmAudio.muted ? 'Unmute' : 'Mute';
-    updateAlarmIcon(alarmAudio.muted);
-  }
-  function toggleMute() {
-    alarmAudio.muted = !alarmAudio.muted;
-    if (alarmAudio.muted) {
-      volumeSlider.value = 0;
-      alarmAudio.volume = 0;
-    } else {
-      volumeSlider.value = 50;
-      alarmAudio.volume = 0.5;
-    }
-    updateSliderBackground(volumeSlider);
-    muteButton.textContent = alarmAudio.muted ? 'Unmute' : 'Mute';
-    chrome.storage.local.set({
-      alarmVolume: alarmAudio.volume,
-      alarmMuted: alarmAudio.muted
-    });
-    updateAlarmIcon(alarmAudio.muted);
-  }
-  function updateSliderBackground(slider) {
-    var value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-    slider.style.setProperty('--value', "".concat(value, "%"));
-  }
-  function updateAlarmIcon(isMuted) {
-    if (isMuted) {
-      alarmButton.style.display = 'none';
-      muteButtonIcon.style.display = 'block';
-    } else {
-      alarmButton.style.display = 'block';
-      muteButtonIcon.style.display = 'none';
-    }
-  }
-
-  // 드롭다운 메뉴 관련 함수들
-  function toggleDropdown() {
-    isDropdownOpen = !isDropdownOpen;
-    dropdownContent.style.display = isDropdownOpen ? 'block' : 'none';
-    updateDropdownStyles();
-  }
-  function changeDropdownStyle(isHover) {
-    dropdown.style.borderColor = isHover || isDropdownOpen ? '#FA560C' : '#C0C0C0';
-    dropdownButton.querySelector('path').style.stroke = isHover || isDropdownOpen ? '#FA560C' : '#C0C0C0';
-  }
-  function changeDropdownBorder(isHover) {
-    if (!isDropdownOpen) {
-      dropdown.style.borderColor = isHover ? '#FA560C' : '#C0C0C0';
-    }
-  }
-  function createNewItemInput() {
-    var existingInput = document.querySelector('.input-new-item');
-    if (existingInput) existingInput.remove();
-    var input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Enter new item';
-    input.className = 'input-new-item';
-    dropdownContent.insertBefore(input, addItemBtn);
-    input.focus();
-    input.addEventListener('blur', function () {
-      if (input.value.trim() && !isItemExist(input.value.trim())) {
-        addDropdownItem(input.value.trim());
-        saveItems();
-      }
-      input.remove();
-    });
-    input.addEventListener('keypress', function (e) {
-      if (e.key === 'Enter' && input.value.trim() && !isItemExist(input.value.trim())) {
-        addDropdownItem(input.value.trim());
-        saveItems();
-        input.remove();
-      }
-    });
-  }
-  function isItemExist(itemText) {
-    return Array.from(dropdownContent.querySelectorAll('button')).some(function (button) {
-      return button.firstChild.textContent === itemText;
-    });
-  }
-  function saveItems() {
-    var items = Array.from(dropdownContent.querySelectorAll('button')).filter(function (button) {
-      return button !== addItemBtn;
-    }).map(function (button) {
-      return button.firstChild.textContent;
-    });
-    chrome.storage.local.set({
-      dropdownItems: items
-    });
-  }
-  function addDropdownItem(itemText) {
-    var newItem = document.createElement('button');
-    newItem.textContent = itemText;
-    newItem.addEventListener('click', function () {
-      dropdown.querySelector('.dropdown-text').textContent = itemText;
-      chrome.storage.local.set({
-        selectedItem: itemText
-      });
-    });
-    var removeBtn = document.createElement('span');
-    removeBtn.textContent = 'X';
-    removeBtn.className = 'remove-btn';
-    removeBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      newItem.remove();
-      saveItems();
-    });
-    newItem.appendChild(removeBtn);
-    dropdownContent.insertBefore(newItem, addItemBtn);
-  }
-
-  // editable 요소 설정
-  function makeEditable(element) {
-    if (!timerMode || running) return;
-    element.classList.add('edit-mode');
-    element.contentEditable = true;
-    element.style.color = '#d3d3d3';
-    element.focus();
-    var handleBlur = function handleBlur(event) {
-      if (event.type === 'blur' || event.type === 'click' && !element.contains(event.target)) {
-        element.contentEditable = false;
-        element.classList.remove('edit-mode');
-        element.style.color = '';
-        updateTime();
-        document.removeEventListener('click', handleBlur);
-        element.removeEventListener('blur', handleBlur);
-        element.removeEventListener('wheel', handleWheelEvent);
-        element.removeEventListener('keydown', handleKeydownEvent);
-      }
-    };
-    var handleWheelEvent = function handleWheelEvent(event) {
-      var value = parseInt(element.textContent, 10);
-      var max = element.id === 'hours' ? 100 : 60;
-      value = (value + (event.deltaY < 0 || event.key === 'ArrowUp' ? 1 : -1) + max) % max;
-      element.textContent = String(value).padStart(2, '0');
-      updateTime();
-    };
-    var handleKeydownEvent = function handleKeydownEvent(event) {
-      if (event.key === 'Enter') {
-        element.blur();
-        event.preventDefault();
-      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        handleWheelEvent(event);
-        event.preventDefault();
-      } else if (/^\d$/.test(event.key)) {
-        var maxValue = element.id === 'hours' ? 99 : 59;
-        var currentValue = parseInt(element.textContent + event.key, 10);
-        element.textContent = currentValue > maxValue ? '00' : String(currentValue).padStart(2, '0');
-        updateTime();
-        event.preventDefault();
-      } else if (event.key === 'Backspace') {
-        element.textContent = '00';
-        updateTime();
-        event.preventDefault();
-      } else {
-        showMessage('Invalid input');
-        event.preventDefault();
-      }
-    };
-    element.addEventListener('blur', handleBlur);
-    document.addEventListener('click', handleBlur);
-    element.addEventListener('wheel', handleWheelEvent);
-    element.addEventListener('keydown', handleKeydownEvent);
-  }
-  var setEditableListeners = function setEditableListeners(element) {
-    element.addEventListener('click', function (event) {
-      event.stopPropagation();
-      makeEditable(element);
-    });
-  };
-  ['hours', 'minutes', 'seconds', 'milliseconds'].forEach(function (id) {
-    setEditableListeners(document.getElementById(id));
-  });
-
-  // 메세지 박스 표시 함수
-  var showMessage = function showMessage(message) {
-    var messageBox = document.getElementById('message-box');
-    if (!messageBox) {
-      messageBox = document.createElement('div');
-      messageBox.id = 'message-box';
-      messageBox.textContent = message;
-      document.body.appendChild(messageBox);
-    } else {
-      messageBox.textContent = message;
-      messageBox.style.display = 'block';
-    }
-    setTimeout(function () {
-      messageBox.style.display = 'none';
-    }, 3000);
-  };
-
-  // 초기 토글 상태 설정
-  if (toggleBody) {
-    chrome.storage.local.get(["switch", "firstToggle"], function (result) {
-      if (result["switch"]) {
-        toggleBody.classList.add("on");
-      }
-      if (result["switch"] && !result.firstToggle) {
-        setTimeout(function () {
-          switchMode('stopwatch', stopwatchBtn);
-          setButtonState(startBtn);
-          toggleRunning('start');
-          chrome.runtime.sendMessage({
-            action: 'startStopwatch'
-          });
-          chrome.tabs.create({
-            url: chrome.runtime.getURL('../cam/webcam.html')
-          });
-        }, 200);
-        chrome.storage.local.set({
-          firstToggle: true
-        });
-      }
-    });
-    toggleBody.addEventListener("click", function () {
-      toggleBody.classList.add("transition");
-      toggleBody.classList.toggle("on");
-      var isOn = toggleBody.classList.contains("on");
-      chrome.storage.local.set({
-        "switch": isOn
-      });
-      if (isOn) {
-        chrome.storage.local.get("firstToggle", function (result) {
-          if (!result.firstToggle) {
-            setTimeout(function () {
-              chrome.tabs.create({
-                url: chrome.runtime.getURL('../cam/webcam.html')
-              });
-            }, 200);
-            switchMode('stopwatch', stopwatchBtn);
-            setButtonState(startBtn);
-            toggleRunning('start');
-            chrome.runtime.sendMessage({
-              action: 'startStopwatch'
-            });
-            chrome.storage.local.set({
-              firstToggle: true
-            });
-          }
-        });
-      } else {
-        chrome.storage.local.set({
-          firstToggle: false
-        });
-        chrome.tabs.query({}, function (tabs) {
-          tabs.forEach(function (tab) {
-            if (tab.url && tab.url.includes('webcam.html')) {
-              switchMode('stopwatch', stopwatchBtn);
-              setButtonState(pauseBtn); // pauseBtn 상태 저장 함수 사용
-              toggleRunning('pause'); // 이 부분을 추가하여 pause 상태로 전환
-              chrome.runtime.sendMessage({
-                action: 'stopStopwatch'
-              });
-              chrome.tabs.remove(tab.id);
+document.addEventListener('DOMContentLoaded', function () {
+  (0,firebase_auth__WEBPACK_IMPORTED_MODULE_1__.onAuthStateChanged)(auth, /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(user) {
+      var uid, userDocRef, userDocSnap, userData;
+      return _regeneratorRuntime().wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            if (!user) {
+              _context.next = 7;
+              break;
             }
-          });
-        });
-      }
-
-      // 백그라운드 스크립트로 상태 변경 메시지 전송
-      chrome.runtime.sendMessage({
-        action: 'toggleSwitch',
-        state: isOn
-      });
-    });
-  }
-  var saveButton = document.getElementById('study-end-button');
-  if (saveButton) {
-    saveButton.addEventListener('click', /*#__PURE__*/function () {
-      var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(event) {
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              event.preventDefault();
-
-              // lack_focus 변수 받아옴
-              fetch('http://127.0.0.1:5000/get_status').then(function (response) {
-                return response.json();
-              }).then( /*#__PURE__*/function () {
-                var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(data) {
-                  var user, uid, totalMilliseconds, totalSeconds, usedTimeInMinutes, focus, date, userDocRef, userDocSnap, _data, timerData, existingData, newTotal, newFocus;
-                  return _regeneratorRuntime().wrap(function _callee$(_context) {
-                    while (1) switch (_context.prev = _context.next) {
-                      case 0:
-                        lack_focus = data.lack_focus / 60; // 초를 분으로 변환
-                        console.log('Lack Focus:', lack_focus);
-                        _context.next = 4;
-                        return chrome.storage.local.get(['user']);
-                      case 4:
-                        user = _context.sent.user;
-                        uid = user.uid;
-                        _context.next = 8;
-                        return chrome.storage.local.get(['stopwatchData']);
-                      case 8:
-                        totalMilliseconds = _context.sent.stopwatchData.time;
-                        totalSeconds = totalMilliseconds / 1000; // 밀리초를 초로 변환
-                        usedTimeInMinutes = totalSeconds / 60; // 초를 분으로 변환
-                        focus = usedTimeInMinutes - lack_focus; // 나중에 변경하기 일단은 total과 동일하게 설정
-                        date = new Date().toISOString().split('T')[0]; // 오늘 날짜
-                        userDocRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__.doc)(db, "users", uid); // 문서가 존재하는지 확인
-                        _context.next = 16;
-                        return (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__.getDoc)(userDocRef);
-                      case 16:
-                        userDocSnap = _context.sent;
-                        if (!userDocSnap.exists()) {
-                          _context.next = 27;
-                          break;
-                        }
-                        // 문서가 존재하면 기존 값을 가져와서 업데이트
-                        _data = userDocSnap.data();
-                        timerData = _data.timer || {};
-                        existingData = timerData[date] || {
-                          total: 0,
-                          focus: 0
-                        };
-                        newTotal = existingData.total + usedTimeInMinutes;
-                        newFocus = existingData.focus + focus;
-                        _context.next = 25;
-                        return (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__.updateDoc)(userDocRef, _defineProperty({}, "timer.".concat(date), {
-                          total: newTotal,
-                          focus: newFocus
-                        }));
-                      case 25:
-                        _context.next = 29;
-                        break;
-                      case 27:
-                        _context.next = 29;
-                        return (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__.setDoc)(userDocRef, {
-                          email: user.email,
-                          timer: _defineProperty({}, date, {
-                            total: usedTimeInMinutes,
-                            focus: focus
-                          })
-                        });
-                      case 29:
-                        // stopwatch 시간 리셋
-                        chrome.runtime.sendMessage({
-                          action: 'resetStopwatch'
-                        }, function () {
-                          // 버튼 상태와 화면을 즉각 업데이트
-                          var startBtn = document.getElementById('start-btn');
-                          var pauseBtn = document.getElementById('pause-btn');
-                          startBtn.classList.remove('selected');
-                          pauseBtn.classList.add('selected');
-                          updateStopwatchDisplay(0);
-                        });
-                        alert('Data saved successfully!');
-
-                        // lack_focus 값을 0으로 초기화
-                        fetch('http://127.0.0.1:5000/set_lack_focus', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json'
-                          },
-                          body: JSON.stringify({
-                            lack_focus: 0
-                          })
-                        }).then(function (response) {
-                          return response.json();
-                        }).then(function (data) {
-                          console.log('Lack Focus 초기화:', data);
-                        })["catch"](function (error) {
-                          console.error('Lack Focus 초기화 중 오류 발생:', error);
-                        });
-                      case 32:
-                      case "end":
-                        return _context.stop();
-                    }
-                  }, _callee);
-                }));
-                return function (_x2) {
-                  return _ref4.apply(this, arguments);
-                };
-              }())["catch"](function (error) {
-                console.error('Error fetching lack_focus:', error);
-              });
-            case 2:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2);
-      }));
-      return function (_x) {
-        return _ref3.apply(this, arguments);
-      };
-    }());
-  }
-
-  // 시간 업데이트 함수
-  function updateTime() {
-    var hours = parseInt(document.getElementById('hours').textContent, 10);
-    var minutes = parseInt(document.getElementById('minutes').textContent, 10);
-    var seconds = parseInt(document.getElementById('seconds').textContent, 10);
-    var milliseconds = parseInt(document.getElementById('milliseconds').textContent, 10) * 10;
-    time = hours * 3600000 + minutes * 60000 + seconds * 1000 + milliseconds;
-    chrome.runtime.sendMessage({
-      action: 'updateTimer',
-      time: time
-    });
-  }
-
-  // 백그라운드 스크립트에서 버튼 상태 메시지 수신
-  chrome.runtime.onMessage.addListener(function (message) {
-    if (message.action === 'updateButtonState') {
-      loadButtonState(message.state);
-    }
-    if (message.action === 'updateToggle') {
-      var isOn = message.state;
-      if (!isOn) {
-        toggleBody.classList.remove("on");
-        setButtonState(pauseBtn); // pauseBtn 상태 저장 함수 사용
-        toggleRunning('pause'); // 이 부분을 추가하여 pause 상태로 전환
-      }
-    }
-    if (message.action === 'stopStopwatch') {
-      clearInterval(interval); // 스톱워치를 멈춤
-      running = false;
-      setButtonState(pauseBtn); // pauseBtn 상태 저장 함수 사용
-      chrome.storage.local.get('stopwatchData', function (result) {
-        var _ref5 = result.stopwatchData || {
-            time: 0,
-            startTime: Date.now()
-          },
-          time = _ref5.time,
-          startTime = _ref5.startTime;
-        updateStopwatchDisplay(time);
-      });
-    }
-    if (message.action === 'updateStopwatchTime') {
-      if (!timerMode) {
-        // 스톱워치 모드에서만 업데이트
-        updateStopwatchDisplay(message.time);
-      }
-    }
-    if (message.action === 'updateTimerTime') {
-      if (timerMode) {
-        // 타이머 모드에서만 업데이트
-        updateTimerDisplay(message.time);
-      }
-    }
-  });
+            uid = user.uid;
+            userDocRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__.doc)(db, "users", uid);
+            _context.next = 5;
+            return (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__.getDoc)(userDocRef);
+          case 5:
+            userDocSnap = _context.sent;
+            if (userDocSnap.exists()) {
+              userData = userDocSnap.data();
+              drawChart(userData.timer);
+            } else {
+              console.log("No such document!");
+            }
+          case 7:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee);
+    }));
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }());
 });
+
+/* focus.js */
+/* focus.js */
+/* focus.js */
+/* focus.js */
+function drawChart(timerData) {
+  var chartContainer = document.getElementById('chart');
+  var yAxisContainer = document.getElementById('y-axis');
+  var today = new Date();
+  var last7Days = new Date();
+  last7Days.setDate(today.getDate() - 6);
+  var dateArray = [];
+  for (var d = new Date(last7Days); d <= today; d.setDate(d.getDate() + 1)) {
+    var dateStr = d.toISOString().slice(0, 10);
+    dateArray.push(dateStr);
+  }
+  var dataArray = dateArray.map(function (date) {
+    var values = timerData[date] || {
+      total: 0,
+      focus: 0
+    };
+    return {
+      date: date,
+      label: date.substring(5, 7) + '/' + date.substring(8, 10),
+      total: values.total,
+      focus: values.focus,
+      isEmpty: values.total === 0 && values.focus === 0
+    };
+  });
+  var totalData = dataArray.map(function (item) {
+    return item.total;
+  });
+  var maxTotal = Math.max.apply(Math, _toConsumableArray(totalData));
+  dataArray.forEach(function (item) {
+    var rowContainer = document.createElement('div');
+    rowContainer.className = 'row-container';
+    var yAxisLabel = document.createElement('span');
+    yAxisLabel.className = 'label';
+    yAxisLabel.textContent = item.label;
+    rowContainer.appendChild(yAxisLabel);
+    var barContainer = document.createElement('div');
+    barContainer.className = 'bar-container';
+    if (item.isEmpty) {
+      var emptyLabel = document.createElement('div');
+      emptyLabel.className = 'empty';
+      emptyLabel.textContent = '-';
+      barContainer.appendChild(emptyLabel);
+    } else {
+      // Calculate the height percentage of the bar based on maxTotal
+      var totalBarHeightPercent = item.total / maxTotal * 85; // 85% of bar-container
+      var focusBarHeightPercent = item.focus / maxTotal * 85; // 85% of bar-container
+
+      var totalBar = document.createElement('div');
+      totalBar.className = 'bar bar-total';
+      totalBar.style.height = "".concat(totalBarHeightPercent, "%");
+      var focusBar = document.createElement('div');
+      focusBar.className = 'bar bar-focus';
+      focusBar.style.height = "".concat(focusBarHeightPercent, "%");
+      var totalBarText = document.createElement('span');
+      totalBarText.className = 'bar-text bar-text-right';
+      totalBarText.textContent = formatTime(item.total);
+      var focusBarText = document.createElement('span');
+      focusBarText.className = 'bar-text bar-text-left';
+      focusBarText.textContent = formatTime(item.focus);
+      totalBar.appendChild(totalBarText);
+      focusBar.appendChild(focusBarText);
+      barContainer.appendChild(totalBar);
+      barContainer.appendChild(focusBar);
+    }
+    rowContainer.appendChild(barContainer);
+    chartContainer.appendChild(rowContainer);
+  });
+}
+function formatTime(minutes) {
+  var h = Math.floor(minutes / 60);
+  var m = Math.floor(minutes % 60);
+  return "".concat(h, "h\n").concat(m, "m");
+}
 /******/ })()
 ;
-//# sourceMappingURL=popup.bundle.js.map
+//# sourceMappingURL=focus.bundle.js.map

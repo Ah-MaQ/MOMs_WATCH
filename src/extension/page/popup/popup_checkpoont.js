@@ -15,7 +15,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
 document.addEventListener("DOMContentLoaded", () => {
     // 초기 변수 설정
     const toggleBody = document.querySelector(".toggleBody");
@@ -45,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let startTime = 0;
     let elapsedTime = 0;
     let usedTimeInMinutes = 0;
-    let lack_focus = 0;
 
     // 로그인 상태 확인 및 UI 업데이트
     onAuthStateChanged(auth, (user) => {
@@ -123,12 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 설정 버튼 클릭 이벤트
     settingsButton.addEventListener('click', () => {
-        const width = 800;
-        const height = 600;
-        const left = (window.screen.width / 2) - (width / 2);
-        const top = (window.screen.height / 2) - (height / 2);
-
-        window.open(chrome.runtime.getURL("../../webpage/settings.html"), 'Settings', `width=${width},height=${height},top=${top},left=${left}`);
+        chrome.tabs.create({ url: chrome.runtime.getURL("../../webpage/settings.html") });
     });
 
     // 모드 스위치
@@ -580,83 +573,63 @@ document.addEventListener("DOMContentLoaded", () => {
             // lack_focus 변수 받아옴
             fetch('http://127.0.0.1:5000/get_status')
             .then(response => response.json())
-            .then(async data => {
-                lack_focus = data.lack_focus / 60; // 초를 분으로 변환
+            .then(data => {
+                var lack_focus = data.lack_focus;
                 console.log('Lack Focus:', lack_focus);
-
-                const user = (await chrome.storage.local.get(['user'])).user;
-                const uid = user.uid;
-                const totalMilliseconds = (await chrome.storage.local.get(['stopwatchData'])).stopwatchData.time;
-                const totalSeconds = totalMilliseconds / 1000; // 밀리초를 초로 변환
-                const usedTimeInMinutes = totalSeconds / 60; // 초를 분으로 변환
-                const focus = usedTimeInMinutes - lack_focus; // 나중에 변경하기 일단은 total과 동일하게 설정
-
-                const date = new Date().toISOString().split('T')[0]; // 오늘 날짜
-
-                const userDocRef = doc(db, "users", uid);
-
-                // 문서가 존재하는지 확인
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    // 문서가 존재하면 기존 값을 가져와서 업데이트
-                    const data = userDocSnap.data();
-                    const timerData = data.timer || {};
-                    const existingData = timerData[date] || { total: 0, focus: 0 };
-
-                    const newTotal = existingData.total + usedTimeInMinutes;
-                    const newFocus = existingData.focus + focus;
-
-                    await updateDoc(userDocRef, {
-                        [`timer.${date}`]: {
-                            total: newTotal,
-                            focus: newFocus
-                        }
-                    });
-                } else {
-                    // 문서가 존재하지 않으면 생성
-                    await setDoc(userDocRef, {
-                        email: user.email,
-                        timer: {
-                            [date]: {
-                                total: usedTimeInMinutes,
-                                focus: focus
-                            }
-                        }
-                    });
-                }
-
-                // stopwatch 시간 리셋
-                chrome.runtime.sendMessage({ action: 'resetStopwatch' }, () => {
-                    // 버튼 상태와 화면을 즉각 업데이트
-                    const startBtn = document.getElementById('start-btn');
-                    const pauseBtn = document.getElementById('pause-btn');
-                    startBtn.classList.remove('selected');
-                    pauseBtn.classList.add('selected');
-                    updateStopwatchDisplay(0);
-                });
-
-                alert('Data saved successfully!');
-
-
-                // lack_focus 값을 0으로 초기화
-                fetch('http://127.0.0.1:5000/set_lack_focus', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ lack_focus: 0 })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Lack Focus 초기화:', data);
-                })
-                .catch(error => {
-                    console.error('Lack Focus 초기화 중 오류 발생:', error);
-                });
             })
-            .catch(error => {
-                console.error('Error fetching lack_focus:', error);
+
+            const user = (await chrome.storage.local.get(['user'])).user;
+            const uid = user.uid;
+            const totalMilliseconds = (await chrome.storage.local.get(['stopwatchData'])).stopwatchData.time;
+            const totalSeconds = totalMilliseconds / 1000; // 밀리초를 초로 변환
+            const usedTimeInMinutes = totalSeconds / 60; // 초를 분으로 변환
+            const focus = usedTimeInMinutes-lack_focus; // 나중에 변경하기 일단은 total과 동일하게 설정
+
+            const date = new Date().toISOString().split('T')[0]; // 오늘 날짜
+
+            const userDocRef = doc(db, "users", uid);
+
+            // 문서가 존재하는지 확인
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                // 문서가 존재하면 기존 값을 가져와서 업데이트
+                const data = userDocSnap.data();
+                const timerData = data.timer || {};
+                const existingData = timerData[date] || { total: 0, focus: 0 };
+
+                const newTotal = existingData.total + usedTimeInMinutes;
+                const newFocus = existingData.focus + focus;
+
+                await updateDoc(userDocRef, {
+                    [`timer.${date}`]: {
+                        total: newTotal,
+                        focus: newFocus
+                    }
+                });
+            } else {
+                // 문서가 존재하지 않으면 생성
+                await setDoc(userDocRef, {
+                    email: user.email,
+                    timer: {
+                        [date]: {
+                            total: usedTimeInMinutes,
+                            focus: focus
+                        }
+                    }
+                });
+            }
+
+            // stopwatch 시간 리셋
+            chrome.runtime.sendMessage({ action: 'resetStopwatch' }, () => {
+                // 버튼 상태와 화면을 즉각 업데이트
+                const startBtn = document.getElementById('start-btn');
+                const pauseBtn = document.getElementById('pause-btn');
+                startBtn.classList.remove('selected');
+                pauseBtn.classList.add('selected');
+                updateStopwatchDisplay(0);
             });
+
+            alert('Data saved successfully!');
         });
     }
 

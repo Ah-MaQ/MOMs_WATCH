@@ -1,0 +1,100 @@
+/* focus.css */
+.chart {
+  display: flex;
+  flex-direction: row; /* 세로 막대 그래프를 위해 row로 변경 */
+  justify-content: space-around;
+  width: 100%;
+  height: 100%; /* 전체 높이를 사용 */
+}
+
+.row-container {
+  display: flex;
+  flex-direction: column; /* 막대들을 세로로 정렬 */
+  align-items: center;
+  height: 100%;
+}
+
+.bar-container {
+  display: flex;
+  flex-direction: column; /* 막대들을 세로로 정렬 */
+  justify-content: flex-end; /* 막대를 아래쪽 정렬 */
+  height: 100%;
+  width: 30px; /* 막대의 너비를 설정 */
+  position: relative;
+}
+
+.bar {
+  width: 100%; /* 막대의 너비 설정 */
+  height: auto; /* 막대의 높이를 데이터에 따라 자동 설정 */
+  text-align: center;
+  color: #fff;
+  border-radius: 5px 5px 0 0; /* 모서리를 둥글게 */
+  position: absolute;
+  font-size: 8px; /* 텍스트 크기 설정 */
+  line-height: 1.2; /* 줄 간격 설정 */
+  white-space: pre;
+  z-index: 1; /* 텍스트가 막대 위에 표시되도록 설정 */
+}
+
+.bar-total {
+  background: rgba(192, 192, 192, 0.15);
+  border: 2px dashed #C0C0C0;
+  border-radius: 5px 5px 0 0;
+  height: auto;
+}
+
+.bar-focus {
+  background: linear-gradient(to top, #FF7907, #FA560C);
+  border-radius: 5px 5px 0 0;
+  height: auto;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.bar-text {
+  font-size: 8px; /* 텍스트 크기 설정 */
+  line-height: 1.2; /* 줄 간격 설정 */
+  position: absolute; /* 텍스트를 절대 위치로 설정 */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2; /* 텍스트가 막대 위에 표시되도록 설정 */
+}
+
+.bar-text-left {
+  top: -15px; /* 텍스트를 막대 위로 배치 */
+}
+
+.bar-text-right {
+  top: -30px; /* 텍스트를 막대 위로 배치 */
+  color: #4B4B4B;
+}
+
+.empty {
+  font-size: 15px;
+  font-weight: 400;
+  background: none;
+  border: none;
+  color: #FF7907;
+  text-align: left;
+  width: 100%;
+}
+
+.axis_y, .axis_x {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+}
+
+.axis_x {
+  flex-direction: column; /* x축 레이블을 세로로 정렬 */
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.label {
+  font-size: 10px;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+}

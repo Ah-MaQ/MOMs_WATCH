@@ -50958,16 +50958,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
 /* harmony import */ var firebase_firestore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! firebase/firestore */ "./node_modules/firebase/firestore/dist/esm/index.esm.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
@@ -51242,195 +51232,174 @@ document.addEventListener('DOMContentLoaded', function () {
     }());
   }
 });
-var totalSum;
-var focusSum;
-var focusRatio;
-// chart
-function DrawChart() {
-  return _DrawChart.apply(this, arguments);
-}
-function _DrawChart() {
-  _DrawChart = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var canvas, ctx, user, uid, userDocRef, userDocSnap, labels, totalData, focusData, data, timerData, dataArray, _i, _Object$entries, _Object$entries$_i, date, values, barWidth, barSpacing, chartHeight, chartWidth, maxValue, scale, legendX, legendY, bars, i, totalBarHeight, focusBarHeight, x, y, focusY, _i2, _x7, _y;
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
-        case 0:
-          canvas = document.getElementById('myChart');
-          ctx = canvas.getContext('2d');
-          _context6.next = 4;
-          return chrome.storage.local.get(['user']);
-        case 4:
-          user = _context6.sent.user;
-          uid = user.uid;
-          userDocRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_3__.doc)(db, "users", uid);
-          _context6.next = 9;
-          return (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_3__.getDoc)(userDocRef);
-        case 9:
-          userDocSnap = _context6.sent;
-          labels = [];
-          totalData = [];
-          focusData = [];
-          if (userDocSnap.exists()) {
-            data = userDocSnap.data();
-            timerData = data.timer; // 데이터를 객체 배열로 변환
-            dataArray = [];
-            for (_i = 0, _Object$entries = Object.entries(timerData); _i < _Object$entries.length; _i++) {
-              _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2), date = _Object$entries$_i[0], values = _Object$entries$_i[1];
-              dataArray.push({
-                date: date,
-                label: date.substring(5, 7) + date.substring(8, 10),
-                total: values.total,
-                focus: values.focus
-              });
-            }
 
-            // 날짜 기준으로 정렬
-            dataArray.sort(function (a, b) {
-              return new Date(a.date) - new Date(b.date);
-            });
-
-            // 정렬된 데이터를 labels와 data 배열로 변환
-            labels = dataArray.map(function (item) {
-              return item.label;
-            });
-            totalData = dataArray.map(function (item) {
-              return item.total;
-            });
-            focusData = dataArray.map(function (item) {
-              return item.focus;
-            });
-          }
-          // focusData와 totalData의 합 구하기
-          totalSum = totalData.reduce(function (acc, value) {
-            return acc + value;
-          }, 0);
-          focusSum = focusData.reduce(function (acc, value) {
-            return acc + value;
-          }, 0);
-          focusRatio = Math.floor(focusSum / totalSum * 100);
-          console.log('Total Sum:', totalSum);
-          console.log('Focus Sum:', focusSum);
-          console.log('Focus Ratio:', focusRatio);
-
-          // 그래프 설정
-          barWidth = 25;
-          barSpacing = 15;
-          chartHeight = canvas.height;
-          chartWidth = canvas.width;
-          maxValue = Math.max.apply(Math, _toConsumableArray(totalData));
-          scale = (chartHeight - 30) / maxValue; // 범례 그리기 (오른쪽 상단)
-          legendX = chartWidth - 180; // 오른쪽 여백
-          legendY = 5; // 상단 여백
-          ctx.fillStyle = '#FF9D76';
-          ctx.fillRect(legendX, legendY, 10, 10);
-          ctx.fillStyle = '#000';
-          ctx.font = '10px Arial';
-          ctx.fillText('Total', legendX + 15, legendY + 10);
-          ctx.fillStyle = '#76A9FF';
-          ctx.fillRect(legendX + 70, legendY, 10, 10);
-          ctx.fillStyle = '#000';
-          ctx.fillText('Focus', legendX + 85, legendY + 10);
-
-          // 그래프 그리기
-          bars = [];
-          for (i = 0; i < totalData.length; i++) {
-            totalBarHeight = totalData[i] * scale;
-            focusBarHeight = focusData[i] * scale;
-            x = i * (barWidth + barSpacing) + barSpacing;
-            y = chartHeight - totalBarHeight;
-            focusY = y + totalBarHeight - focusBarHeight; // Total 바 그리기
-            ctx.fillStyle = '#FF9D76';
-            ctx.fillRect(x, y, barWidth, totalBarHeight);
-
-            // Focus 바 그리기
-            ctx.fillStyle = '#76A9FF';
-            ctx.fillRect(x, focusY, barWidth, focusBarHeight);
-            bars.push({
-              x: x,
-              y: y,
-              width: barWidth,
-              height: totalBarHeight,
-              totalValue: totalData[i],
-              focusValue: focusData[i]
-            });
-          }
-
-          // 레이블 그리기
-          ctx.fillStyle = '#000';
-          ctx.font = '12px Arial';
-          for (_i2 = 0; _i2 < labels.length; _i2++) {
-            _x7 = _i2 * (barWidth + barSpacing) + barSpacing + barWidth / 2;
-            _y = chartHeight - 5;
-            ctx.fillText(labels[_i2], _x7 - ctx.measureText(labels[_i2]).width / 2, _y);
-          }
-
-          // 마우스 오버 이벤트 처리
-          canvas.addEventListener('mousemove', function (event) {
-            var rect = canvas.getBoundingClientRect();
-            var mouseX = event.clientX - rect.left;
-            var mouseY = event.clientY - rect.top;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 범례 다시 그리기 (오른쪽 상단)
-            ctx.fillStyle = '#FF9D76';
-            ctx.fillRect(legendX, legendY, 10, 10);
-            ctx.fillStyle = '#000';
-            ctx.font = '10px Arial';
-            ctx.fillText('Total', legendX + 15, legendY + 10);
-            ctx.fillStyle = '#76A9FF';
-            ctx.fillRect(legendX + 70, legendY, 10, 10);
-            ctx.fillStyle = '#000';
-            ctx.fillText('Focus', legendX + 85, legendY + 10);
-
-            // 그래프 다시 그리기
-            for (var _i3 = 0; _i3 < totalData.length; _i3++) {
-              var _totalBarHeight = totalData[_i3] * scale;
-              var _focusBarHeight = focusData[_i3] * scale;
-              var _x8 = _i3 * (barWidth + barSpacing) + barSpacing;
-              var _y2 = chartHeight - _totalBarHeight;
-              var _focusY = _y2 + _totalBarHeight - _focusBarHeight;
-
-              // Total 바 다시 그리기
-              ctx.fillStyle = '#FF9D76';
-              ctx.fillRect(_x8, _y2, barWidth, _totalBarHeight);
-
-              // Focus 바 다시 그리기
-              ctx.fillStyle = '#76A9FF';
-              ctx.fillRect(_x8, _focusY, barWidth, _focusBarHeight);
-            }
-
-            // 레이블 다시 그리기
-            ctx.fillStyle = '#000';
-            ctx.font = '12px Arial';
-            for (var _i4 = 0; _i4 < labels.length; _i4++) {
-              var _x9 = _i4 * (barWidth + barSpacing) + barSpacing + barWidth / 2;
-              var _y3 = chartHeight - 5;
-              ctx.fillText(labels[_i4], _x9 - ctx.measureText(labels[_i4]).width / 2, _y3);
-            }
-
-            // 마우스 오버된 바 찾기
-            for (var _i5 = 0, _bars = bars; _i5 < _bars.length; _i5++) {
-              var bar = _bars[_i5];
-              if (mouseX >= bar.x && mouseX <= bar.x + bar.width && mouseY >= bar.y && mouseY <= bar.y + bar.height) {
-                // 데이터 표시
-                ctx.fillStyle = '#000';
-                ctx.fillRect(mouseX, mouseY - 40, 80, 40); // 배경 박스
-                ctx.fillStyle = '#fff';
-                ctx.fillText("Total: ".concat(bar.totalValue.toFixed(2)), mouseX + 5, mouseY - 25);
-                ctx.fillText("Focus: ".concat(bar.focusValue.toFixed(2)), mouseX + 5, mouseY - 10);
-                break;
-              }
-            }
-          });
-          displayUserInfo(user.name);
-        case 44:
-        case "end":
-          return _context6.stop();
-      }
-    }, _callee6);
-  }));
-  return _DrawChart.apply(this, arguments);
-}
+//let totalSum;
+//let focusSum;
+//let focusRatio;
+//// chart
+//async function DrawChart() {
+//  const canvas = document.getElementById('myChart');
+//  const ctx = canvas.getContext('2d');
+//
+//  const user = (await chrome.storage.local.get(['user'])).user;
+//  const uid = user.uid;
+//  const userDocRef = doc(db, "users", uid);
+//  const userDocSnap = await getDoc(userDocRef);
+//
+//  let labels = [];
+//  let totalData = [];
+//  let focusData = [];
+//
+//  if (userDocSnap.exists()) {
+//    const data = userDocSnap.data();
+//    const timerData = data.timer;
+//
+//    // 데이터를 객체 배열로 변환
+//    let dataArray = [];
+//    for (const [date, values] of Object.entries(timerData)) {
+//        dataArray.push({
+//            date: date,
+//            label: date.substring(5, 7) + date.substring(8, 10),
+//            total: values.total,
+//            focus: values.focus
+//        });
+//    }
+//
+//    // 날짜 기준으로 정렬
+//    dataArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+//
+//    // 정렬된 데이터를 labels와 data 배열로 변환
+//    labels = dataArray.map(item => item.label);
+//    totalData = dataArray.map(item => item.total);
+//    focusData = dataArray.map(item => item.focus);
+//  }
+//    // focusData와 totalData의 합 구하기
+//    totalSum = totalData.reduce((acc, value) => acc + value, 0);
+//    focusSum = focusData.reduce((acc, value) => acc + value, 0);
+//    focusRatio = Math.floor((focusSum / totalSum) * 100);
+//
+//    console.log('Total Sum:', totalSum);
+//    console.log('Focus Sum:', focusSum);
+//    console.log('Focus Ratio:', focusRatio);
+//
+//  // 그래프 설정
+//  const barWidth = 25;
+//  const barSpacing = 15;
+//  const chartHeight = canvas.height;
+//  const chartWidth = canvas.width;
+//  const maxValue = Math.max(...totalData);
+//  const scale = (chartHeight-30) / maxValue;
+//
+//  // 범례 그리기 (오른쪽 상단)
+//  const legendX = chartWidth - 180; // 오른쪽 여백
+//  const legendY = 5; // 상단 여백
+//
+//  ctx.fillStyle = '#FF9D76';
+//  ctx.fillRect(legendX, legendY, 10, 10);
+//  ctx.fillStyle = '#000';
+//  ctx.font = '10px Arial';
+//  ctx.fillText('Total', legendX + 15, legendY + 10);
+//
+//  ctx.fillStyle = '#76A9FF';
+//  ctx.fillRect(legendX + 70, legendY, 10, 10);
+//  ctx.fillStyle = '#000';
+//  ctx.fillText('Focus', legendX + 85, legendY + 10);
+//
+//  // 그래프 그리기
+//  const bars = [];
+//  for (let i = 0; i < totalData.length; i++) {
+//      const totalBarHeight = totalData[i] * scale;
+//      const focusBarHeight = focusData[i] * scale;
+//      const x = i * (barWidth + barSpacing) + barSpacing;
+//      const y = chartHeight - totalBarHeight;
+//      const focusY = y + totalBarHeight - focusBarHeight;
+//
+//      // Total 바 그리기
+//      ctx.fillStyle = '#FF9D76';
+//      ctx.fillRect(x, y, barWidth, totalBarHeight);
+//
+//      // Focus 바 그리기
+//      ctx.fillStyle = '#76A9FF';
+//      ctx.fillRect(x, focusY, barWidth, focusBarHeight);
+//
+//      bars.push({ x, y, width: barWidth, height: totalBarHeight, totalValue: totalData[i], focusValue: focusData[i] });
+//  }
+//
+//  // 레이블 그리기
+//  ctx.fillStyle = '#000';
+//  ctx.font = '12px Arial';
+//  for (let i = 0; i < labels.length; i++) {
+//      const x = i * (barWidth + barSpacing) + barSpacing + barWidth / 2;
+//      const y = chartHeight - 5;
+//      ctx.fillText(labels[i], x - ctx.measureText(labels[i]).width / 2, y);
+//  }
+//
+//  // 마우스 오버 이벤트 처리
+//  canvas.addEventListener('mousemove', function(event) {
+//    const rect = canvas.getBoundingClientRect();
+//    const mouseX = event.clientX - rect.left;
+//    const mouseY = event.clientY - rect.top;
+//
+//    ctx.clearRect(0, 0, canvas.width, canvas.height);
+//
+//    // 범례 다시 그리기 (오른쪽 상단)
+//    ctx.fillStyle = '#FF9D76';
+//    ctx.fillRect(legendX, legendY, 10, 10);
+//    ctx.fillStyle = '#000';
+//    ctx.font = '10px Arial';
+//    ctx.fillText('Total', legendX + 15, legendY + 10);
+//
+//    ctx.fillStyle = '#76A9FF';
+//    ctx.fillRect(legendX + 70, legendY, 10, 10);
+//    ctx.fillStyle = '#000';
+//    ctx.fillText('Focus', legendX + 85, legendY + 10);
+//
+//    // 그래프 다시 그리기
+//    for (let i = 0; i < totalData.length; i++) {
+//        const totalBarHeight = totalData[i] * scale;
+//        const focusBarHeight = focusData[i] * scale;
+//        const x = i * (barWidth + barSpacing) + barSpacing;
+//        const y = chartHeight - totalBarHeight;
+//        const focusY = y + totalBarHeight - focusBarHeight;
+//
+//        // Total 바 다시 그리기
+//        ctx.fillStyle = '#FF9D76';
+//        ctx.fillRect(x, y, barWidth, totalBarHeight);
+//
+//        // Focus 바 다시 그리기
+//        ctx.fillStyle = '#76A9FF';
+//        ctx.fillRect(x, focusY, barWidth, focusBarHeight);
+//    }
+//
+//    // 레이블 다시 그리기
+//    ctx.fillStyle = '#000';
+//    ctx.font = '12px Arial';
+//    for (let i = 0; i < labels.length; i++) {
+//        const x = i * (barWidth + barSpacing) + barSpacing + barWidth / 2;
+//        const y = chartHeight - 5;
+//        ctx.fillText(labels[i], x - ctx.measureText(labels[i]).width / 2, y);
+//    }
+//
+//    // 마우스 오버된 바 찾기
+//    for (const bar of bars) {
+//      if (
+//        mouseX >= bar.x &&
+//        mouseX <= bar.x + bar.width &&
+//        mouseY >= bar.y &&
+//        mouseY <= bar.y + bar.height
+//      ) {
+//        // 데이터 표시
+//        ctx.fillStyle = '#000';
+//        ctx.fillRect(mouseX, mouseY - 40, 80, 40); // 배경 박스
+//        ctx.fillStyle = '#fff';
+//        ctx.fillText(`Total: ${bar.totalValue.toFixed(2)}`, mouseX + 5, mouseY - 25);
+//        ctx.fillText(`Focus: ${bar.focusValue.toFixed(2)}`, mouseX + 5, mouseY - 10);
+//        break;
+//      }
+//    }
+//  });
+//  displayUserInfo(user.name);
+//}
 /******/ })()
 ;
 //# sourceMappingURL=auth.bundle.js.map

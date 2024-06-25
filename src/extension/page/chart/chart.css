@@ -1,0 +1,171 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  width: 360px;
+  height: 540px;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.head-container {
+    width: 100%;
+    height: 50px;
+    padding: 0px 10px 10px 8px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+    background-color: transparent;
+    justify-content: space-between;
+    align-items: flex-end;
+    display: flex;
+    position: relative;
+}
+
+.head {
+    width: 200px;
+    height: 100%;
+    justify-content: space-between;
+    align-items: flex-end;
+    display: flex;
+    position: relative;
+}
+
+.head .title {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 20px;
+    background: linear-gradient(180deg, #FE8D33 0%, #F84401 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    align-self: flex-end;
+}
+
+
+.chart-container {
+  height: 350px;
+  width: 100%;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: inset 0px 2px 2px rgba(0, 0, 0, 0.25);
+  border: 1px solid #F2F2F2;
+}
+
+.chart-wrapper {
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  height: 100%;
+  width: 100%; /* Ensure chart-wrapper takes full width */
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%; /* Set chart width to 100% */
+  height: 100%;
+  position: relative;
+  padding-left: 0px;
+  margin: 0;
+}
+
+.row-container {
+  display: flex;
+  align-items: center; /* Center align items vertically */
+}
+
+.bar-container {
+  display: flex;
+  align-items: center; /* Center align items vertically */
+  flex: 1;
+  position: relative;
+  height: 30px; /* Increase height to make bars more visible */
+}
+
+.bar {
+  height: 80%;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+  position: absolute;
+  font-size: 8px; /* Adjust font size to be smaller */
+  line-height: 1.2; /* Adjust line height for better spacing */
+  white-space: pre;
+  z-index: 1; /* Set z-index to ensure bars are below the text */
+}
+
+.bar-total {
+  background: rgba(192, 192, 192, 0.15);
+  /* border: 2px dashed #FA560C; */
+  /* border: 2px dashed #4B4B4B; */
+  border: 2px dashed #C0C0C0;
+  border-radius: 0 15px 15px 0;
+  height: calc(80% + 4px); /* Ensure the total bar fills the container height */
+  width: 80%; /* Set the total bar width to 80% of the container */
+}
+
+.bar-focus {
+  background: linear-gradient(to right, #FF7907, #FA560C);
+  border-radius: 0 12px 12px 0;
+  height: 80%; /* Ensure the focus bar fills the container height */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.bar-text {
+  font-size: 8px; /* Small font size for the bar text */
+  line-height: 1.2; /* Adjust line height for better spacing */
+  position: absolute; /* Ensure text is positioned absolutely within container */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2; /* Ensure text is above the bars */
+}
+
+.bar-text-left {
+  right: 10px; /* Adjust as needed for proper positioning */
+}
+
+.bar-text-right {
+  right: -23px; /* Adjust as needed for proper positioning */
+  /* color: #FF7907; */
+  /* color: #C0C0C0; */
+  color: #4B4B4B;
+}
+
+.empty {
+  font-size: 15px;
+  font-weight: 400;
+  background: none;
+  border: none;
+  color: #FF7907;
+  text-align: left;
+  width: 100%;
+}
+
+.axis_y, .axis_x {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+}
+
+.axis_x {
+  width: 85%;
+  justify-content: space-between;
+  margin-left: 5px;
+}
+
+.label {
+  font-size: 10px;
+  text-align: right;
+  margin-right: 10px; /* Adjust for better alignment */
+  color: #333;
+  height: 30px;
+  display: flex;
+  align-items: center; /* Center the labels vertically */
+  width: 40px; /* Ensure labels are aligned */
+}
