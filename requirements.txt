@@ -1,0 +1,13 @@
+# Usage: pip install -r requirements.txt
+
+# Base ----------------------------------------
+einops 
+opencv-python 
+matplotlib 
+mediapipe
+flask
+flask_cors
+ultralytics
+dill
+scikit-learn
+onnx

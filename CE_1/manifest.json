@@ -1,9 +1,0 @@
-{
-  "name": "Chrome Extension test",
-  "description": "확장프로그램 연습",
-  "version": "1.0",
-  "manifest_version": 3,
-  "action": {
-    "default_popup": "index.html"
-  }
-}

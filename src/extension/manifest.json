@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+
+  "name": "Mom's Watch",
+  "description": "집중도 추적 프로그램",
+  "version": "1.0.0",
+
+  "action": {
+    "default_popup": "page/popup/popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; script-src-elem 'self'; object-src 'self';"
+  },
+
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications",
+    "identity",
+    "identity.email",
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["alarm.mp3", "alarm.png", "wakeup.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
