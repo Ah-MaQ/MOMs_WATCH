@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     const video = document.getElementById('webcam');
+    const pipButton = document.getElementById('pipButton');
+    const fullscreenButton = document.getElementById('fullscreenButton');
+    const popupButton = document.getElementById('popupButton');
 
     async function startWebcam() {
         try {
@@ -20,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         const formData = new FormData();
                         formData.append('frame', blob, 'frame.jpg');
 
-                        fetch('http://127.0.0.1:5000/upload_frame', {  // URL 수정
+                        fetch('http://127.0.0.1:5000/upload_frame', {
                             method: 'POST',
                             body: formData
                         }).then(response => {
@@ -39,6 +42,31 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('Error accessing the webcam:', error);
         }
     }
+
+    pipButton.addEventListener('click', async () => {
+        if (document.pictureInPictureElement) {
+            await document.exitPictureInPicture();
+        } else {
+            await video.requestPictureInPicture();
+        }
+    });
+
+    fullscreenButton.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            video.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    });
+
+    popupButton.addEventListener('click', () => {
+        const popup = window.open("", "popup", "width=640,height=480");
+        popup.document.write(`<video id="popupWebcam" autoplay playsinline></video>`);
+        const popupVideo = popup.document.getElementById('popupWebcam');
+        popupVideo.srcObject = video.srcObject;
+    });
 
     startWebcam();
 });

@@ -1,0 +1,22 @@
+{
+  "name": "chrome-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension with login and registration",
+  "main": "background.js",
+  "scripts": {
+    "start": "webpack serve",
+    "build": "webpack"
+  },
+  "type": "module",
+  "dependencies": {
+    "firebase": "^9.6.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.75.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1",
+    "babel-loader": "^8.2.2",
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.5"
+  }
+}

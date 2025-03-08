@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="dist/auth.bundle.js" defer></script>
+</head>
+<body>
+    <h1>Login</h1>
+    <div id="user-info" style="display: none;"></div>
+    <form id="login-form" style="display: block;">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Log in</button>
+    </form>
+    <button id="logout-button" style="display: none;">Log out</button>
+    <a href="register.html">회원가입</a>
+</body>
+</html>
